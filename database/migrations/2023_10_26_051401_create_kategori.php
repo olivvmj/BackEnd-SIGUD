@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stock', function (Blueprint $table) {
+        Schema::create('kategori', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('barang_id');
-            $table->string('stok_out');
-            $table->string('stok_in');
-            $table->string('total_stok');
+            $table->string('nama_kategori');
             $table->timestamps();
-
-            $table->foreign('barang_id')->references('id')->on('barang');
         });
     }
 
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock');
+        Schema::dropIfExists('kategori');
     }
 };
