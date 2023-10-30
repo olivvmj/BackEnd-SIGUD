@@ -23,22 +23,32 @@ class UserRolePermissionSeeder extends Seeder
 
         try {
             $superAdmin = User::create(array_merge([
-                'role_id' => '1',
-                'name' => 'Super Admin',
-                'username' => 'SuperAdmin',
+                'username' => 'superAdmin',
+                'name'  => 'Super Admin',
             ], $default_user_value));
 
             $operator = User::create(array_merge([
-                'role_id' => '2',
-                'name' => 'Operator',
-                'username' => 'operator1',
+                'username' => 'NamaOperator',
+                'name'  => 'Operator',
             ], $default_user_value));
 
             $client = User::create(array_merge([
-                'role_id' => '3',
-                'name' => 'Peminjam',
-                'username' => 'Peminjam',
+                'username' => 'NamaClient',
+                'name'  => 'Client',
             ], $default_user_value));
+
+            $role_superAdmin = Role::create(['name' =>'superAdmin']);
+            $role_operator = Role::create(['name' => 'operator']);
+            $role_client = Role::create(['name' => 'client']);
+
+            $permission = Permission::create(['name' => 'read role']);
+            $permission = Permission::create(['name' => 'create role']);
+            $permission = Permission::create(['name' => 'update role']);
+            $permission = Permission::create(['name' => 'delete role']);
+
+            $superAdmin->assignRole('superAdmin');
+            $operator->assignRole('operator');
+            $client->assignRole('client');
 
             DB::commit();
         } catch (\Throwable $th) {
