@@ -2,40 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Role;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-
-    public function login(Request $request) {
-        // validasi
+    public function login(Request $request)
+    {
         $credentials = $request->validate([
             'username' => 'required',
             'password' => 'required'
         ]);
 
-        if (auth()->attempt($credentials)) {
-
-            // buat ulang session login
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            if (auth()->user()->role_id === 1) {
-                // jika user superadmin
-                return redirect()->intended('/SuperAdmin');
-            }elseif (auth()->user()->role_id === 2) {
-                // jika user superadmin
-                return redirect()->intended('/Operator');
-            } else {
-                // jika user pegawai
-                return redirect()->intended('/Client');
-            }
+            return response()->json(['message' => 'Login successful'], 200);
         }
 
-        // jika email atau password salah
-        // kirimkan session error
-        return back()->with('error', 'username atau password salah');
+
+        return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
     public function logout(Request $request) {

@@ -2,21 +2,29 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+
+use App\Models\DataUser;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
+    protected $guarded = ['id'];
+
+
     protected $fillable = [
         'name',
         'username',
@@ -32,9 +40,15 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-    // inverse one to Many ke tabel role
-    public function role() {
-        return $this->belongsTo(Role::class, 'role_id');
-    }
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+
+    public function dataUser()
+    {
+        return $this->hasMany(DataUser::class, 'user_id');
+    }
 }
