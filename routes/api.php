@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\KategoriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,4 +25,8 @@ Route::middleware('auth:sanctum')->get('/user', function(Request $request) {
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/kategori', [KategoriController::class,'kategori']);
+    Route::post('/kategori', [KategoriController::class,'kategori']);
 });
+
+

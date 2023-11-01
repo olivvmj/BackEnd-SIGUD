@@ -14,7 +14,8 @@ class AuthController extends Controller
     {
         $user = User::where('username', $request->username)->firstOrFail();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {            return response()->json([
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
             "status" => false,
             "pesan" => "Maaf, Akun Anda Tidak Ditemukan"
             ], 400);
