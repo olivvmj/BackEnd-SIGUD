@@ -1,9 +1,11 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Models\StatusPermintaan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\KategoriController;
+use App\Http\Controllers\Api\StatusPermintaanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,8 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function(Request $request) {
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/kategori', [KategoriController::class,'index']);
-    Route::post('/kategori', [KategoriController::class,'store']);
+
 });
 
 Route::middleware(['auth:sanctum'])->prefix('/kategori')->group(function () {
@@ -36,6 +37,15 @@ Route::middleware(['auth:sanctum'])->prefix('/kategori')->group(function () {
     Route::put('/{id}', [KategoriController::class, 'update'])->name('update');
     Route::delete('/{id}', [KategoriController::class, 'destroy'])->name('destroy');
 });
+
+Route::middleware(['auth:sanctum'])->prefix('/statuspermintaan')->group(function () {
+    Route::get('/', [StatusPermintaanController::class, 'index'])->name('index');
+    Route::post('/', [StatusPermintaanController::class, 'store'])->name('store');
+    Route::get('/{id}', [StatusPermintaanController::class, 'show'])->name('show');
+    Route::put('/{id}', [StatusPermintaanController::class, 'update'])->name('update');
+    Route::delete('/{id}', [StatusPermintaanController::class, 'destroy'])->name('destroy');
+});
+
 
 
 Route::resource('/Brand', \App\Http\Controllers\BrandController::class);
