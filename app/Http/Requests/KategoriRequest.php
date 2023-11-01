@@ -33,7 +33,7 @@ class KategoriRequest extends FormRequest
     public function message()
     {
         return [
-            'nama_kategori.required' =>'kolom nama kategori wajib diisi',
+            'required' =>'kolom nama kategori wajib diisi',
         ];
     }
 

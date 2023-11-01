@@ -25,8 +25,15 @@ Route::middleware('auth:sanctum')->get('/user', function(Request $request) {
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/kategori', [KategoriController::class,'kategori']);
-    Route::post('/kategori', [KategoriController::class,'kategori']);
+    Route::get('/kategori', [KategoriController::class,'index']);
+    Route::post('/kategori', [KategoriController::class,'store']);
 });
 
+Route::middleware(['auth:sanctum'])->prefix('/kategori')->group(function () {
+    Route::get('/', [KategoriController::class, 'index'])->name('index');
+    Route::post('/', [KategoriController::class, 'store'])->name('store');
+    Route::get('/{id}', [KategoriController::class, 'show'])->name('show');
+    Route::put('/{id}', [KategoriController::class, 'update'])->name('update');
+    Route::delete('/{id}', [KategoriController::class, 'destroy'])->name('destroy');
+});
 
