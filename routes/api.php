@@ -37,3 +37,6 @@ Route::middleware(['auth:sanctum'])->prefix('/kategori')->group(function () {
     Route::delete('/{id}', [KategoriController::class, 'destroy'])->name('destroy');
 });
 
+
+Route::resource('/Brand', \App\Http\Controllers\BrandController::class);
+
