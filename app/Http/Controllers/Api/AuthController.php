@@ -5,54 +5,53 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Auth\LoginRequest;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    protected $user;
+
+    public function __construct(User $user)
     {
-        $user = User::where('username', $request->username)->firstOrFail();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-            "status" => false,
-            "pesan" => "Maaf, Akun Anda Tidak Ditemukan"
-            ], 400);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            "status" => true,
-            "user" => $user,
-            "token" => $token
-        ], 201);
+        $this->user = $user;
     }
-    public function register(Request $request)
+
+    public function login(LoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'password' => 'required|string'
-        ]);
+        return DB::transaction(function() use ($request) {
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors());
-        }
+            $data = $this->user->where("username", $request->username)->first();
 
-        $user = User::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'password' => Hash::make($request->password)
-        ]);
+            if (!$data || !Hash::check($request->password, $data->password)) {
+                return response()->json([
+                    "status" => false,
+                    "pesan" => "Maaf, Akun Anda Tidak Ditemukan"
+                ], 400);
+            }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $data->createToken("auth_token")->plainTextToken;
+
+            $response = [
+                "status" => true,
+                "user" => $data,
+                "token" => $token
+            ];
+
+            return response($response, 201);
+
+        });
+    }
+
+    public function logout(User $user){
+
+        $user->tokens()->delete();
 
         return response()->json([
-            'data' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer'
-        ]);
+            "success" => true,
+            "pesan" => "Logout berhasil"
+        ], 200);
     }
 }
