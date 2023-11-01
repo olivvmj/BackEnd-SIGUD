@@ -50,13 +50,14 @@ class BrandController extends Controller
             ]);
         });
     }
-    public function show( Brand $brand)
+    
+    public function show($id)
     {
-        return response()->json([
-            'data' => new BrandResource($brand),
-            'message' => 'data found',
-            'success' => true
-        ]);
+        return DB::transaction(function () use ($id) {
+            $data = $this->brand->findOrFail($id);
+
+            return new BrandResource($data);
+        });
     }
 
     /**
@@ -70,40 +71,35 @@ class BrandController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Brand $brand)
+    public function update(BrandRequest $request, string $id)
     {
-        $validator = Validator::make($request->all(), [
-            'nama_brand'=> 'required'
-        ]);
+        return DB::transaction(function() use ($request, $id) {
 
-        if ($validator->fails()) {
+            $update = $this->brand->findOrFail($id);
+
+            $update->update($request->all());
+
             return response()->json([
-                'data' => [],
-                'message' => $validator->errors(),
-                'success' => false
+                "status" => true,
+                "pesan" => "Data Berhasil di Simpan",
+                "data" => $request->all() 
             ]);
-        }
-
-        $brand->update([
-            'nama_brand'=> $request->get('nama_brand')
-        ]);
-
-        return response()->json([
-            'data' => new BrandResource($brand)
-        ]);
+    });
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Brand $brand)
+    public function destroy(string $id)
     {
-        $brand->delete();
+        return DB::transaction(function () use ($id) {
+            $this->brand->destroy($id);
 
-        return response()->json([
-            'data' => [],
-            'message' => 'hapus sukses',
-            'success' => true
-        ]);
+            return response()->json([
+                "status" => true,
+                "pesan" => "Data Berhasil di Hapus" 
+            ]);
+
+        });
     }
 }
