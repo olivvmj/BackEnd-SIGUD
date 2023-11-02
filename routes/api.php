@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Models\StatusPermintaan;
+//use App\Models\StatusPermintaan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\StatusPermintaanController;
 
@@ -46,6 +47,13 @@ Route::middleware(['auth:sanctum'])->prefix('/statuspermintaan')->group(function
     Route::delete('/{id}', [StatusPermintaanController::class, 'destroy'])->name('destroy');
 });
 
+Route::middleware(['auth:sanctum'])->prefix('/barang')->group(function () {
+    Route::get('/', [BarangController::class, 'index'])->name('index');
+    Route::post('/', [BarangController::class, 'store'])->name('store');
+    Route::get('/{id}', [BarangController::class, 'show'])->name('show');
+    Route::put('/{id}', [BarangController::class, 'update'])->name('update');
+    Route::delete('/{id}', [BarangController::class, 'destroy'])->name('destroy');
+});
 
 
 Route::resource('/Brand', \App\Http\Controllers\BrandController::class);
