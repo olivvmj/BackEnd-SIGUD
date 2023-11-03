@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 //use App\Models\StatusPermintaan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\StatusPermintaanController;
@@ -54,6 +55,16 @@ Route::middleware(['auth:sanctum'])->prefix('/barang')->group(function () {
     Route::put('/{id}', [BarangController::class, 'update'])->name('update');
     Route::delete('/{id}', [BarangController::class, 'destroy'])->name('destroy');
 });
+
+Route::middleware(['auth:sanctum'])->prefix('/stock')->group(function () {
+    Route::get('/', [StockController::class, 'index'])->name('index');
+    Route::post('/', [StockController::class, 'store'])->name('store');
+    Route::get('/{id}', [StockController::class, 'show'])->name('show');
+    Route::put('/{id}', [StockController::class, 'update'])->name('update');
+    Route::delete('/{id}', [StockController::class, 'destroy'])->name('destroy');
+});
+
+
 
 
 Route::resource('/Brand', \App\Http\Controllers\BrandController::class);
