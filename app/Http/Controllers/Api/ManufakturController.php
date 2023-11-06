@@ -51,13 +51,13 @@ class ManufakturController extends Controller
             ]);
         });
     }
-    public function show( Manufaktur $manufaktur)
+    public function show($id)
     {
-        return response()->json([
-            'data' => new ManufakturResource($manufaktur),
-            'message' => 'data found',
-            'success' => true
-        ]);
+        return DB::transaction(function () use ($id) {
+            $data = $this->manufaktur->findOrFail($id);
+
+            return new ManufakturResource($data);
+        });
     }
 
     /**
