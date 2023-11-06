@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\Api\KategoriController;
 
 /*
@@ -29,14 +30,21 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/kategori', [KategoriController::class,'store']);
 });
 
-Route::middleware(['auth:sanctum'])->prefix('/kategori')->group(function () {
-    Route::get('/', [KategoriController::class, 'index'])->name('index');
-    Route::post('/', [KategoriController::class, 'store'])->name('store');
-    Route::get('/{id}', [KategoriController::class, 'show'])->name('show');
-    Route::put('/{id}', [KategoriController::class, 'update'])->name('update');
-    Route::delete('/{id}', [KategoriController::class, 'destroy'])->name('destroy');
+Route::middleware(['auth:sanctum'])->group(function() {
+    Route::prefix("kategori")->group(function() {
+        Route::get('/', [KategoriController::class, 'index'])->name('index');
+        Route::post('/', [KategoriController::class, 'store'])->name('store');
+        Route::get('/{id}', [KategoriController::class, 'show'])->name('show');
+        Route::put('/{id}', [KategoriController::class, 'update'])->name('update');
+        Route::delete('/{id}', [KategoriController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix("brand")->group(function() {
+        Route::get('/', [BrandController::class, 'index'])->name('index');
+        Route::post('/', [BrandController::class, 'store'])->name('store');
+        Route::get('/{id}', [BrandController::class, 'show'])->name('show');
+        Route::put('/{id}', [BrandController::class, 'update'])->name('update');
+        Route::delete('/{id}', [BrandController::class, 'destroy'])->name('destroy');
+    });
 });
-
-
-Route::resource('/Brand', \App\Http\Controllers\BrandController::class);
 

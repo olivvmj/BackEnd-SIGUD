@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use App\Models\Brand;
 use Illuminate\Support\Str;
@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\BrandRequest;
 use Illuminate\Support\Facades\Bus;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\BrandResource;
 use Illuminate\Support\Facades\Validator;
 
@@ -50,7 +51,7 @@ class BrandController extends Controller
             ]);
         });
     }
-    
+
     public function show($id)
     {
         return DB::transaction(function () use ($id) {
@@ -82,7 +83,7 @@ class BrandController extends Controller
             return response()->json([
                 "status" => true,
                 "pesan" => "Data Berhasil di Simpan",
-                "data" => $request->all() 
+                "data" => $request->all()
             ]);
     });
     }
@@ -97,7 +98,7 @@ class BrandController extends Controller
 
             return response()->json([
                 "status" => true,
-                "pesan" => "Data Berhasil di Hapus" 
+                "pesan" => "Data Berhasil di Hapus"
             ]);
 
         });
