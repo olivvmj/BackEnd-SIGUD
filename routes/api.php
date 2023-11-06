@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\KategoriController;
+use App\Http\Controllers\Api\ManufakturController;
 use App\Http\Controllers\Api\StatusPermintaanController;
 
 /*
@@ -64,6 +65,13 @@ Route::middleware(['auth:sanctum'])->prefix('/stock')->group(function () {
     Route::delete('/{id}', [StockController::class, 'destroy'])->name('destroy');
 });
 
+Route::middleware(['auth:sanctum'])->prefix('/manufaktur')->group(function () {
+    Route::get('/', [ManufakturController::class, 'index'])->name('index');
+    Route::post('/', [ManufakturController::class, 'store'])->name('store');
+    Route::get('/{id}', [ManufakturController::class, 'show'])->name('show');
+    Route::put('/{id}', [ManufakturController::class, 'update'])->name('update');
+    Route::delete('/{id}', [ManufakturController::class, 'destroy'])->name('destroy');
+});
 
 
 
