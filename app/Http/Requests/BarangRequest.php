@@ -29,7 +29,6 @@ class BarangRequest extends FormRequest
             'kategori_id' => 'required|exists:kategori,id',
             'brand_id' => 'required|exists:brand,id',
             'nama_barang' => 'required|string|max:255',
-            'serial_number' => 'string|max:255',
             'gambar_barang' => 'string|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
@@ -43,7 +42,6 @@ class BarangRequest extends FormRequest
             'brand_id.exists' => 'Brand yang dipilih tidak valid.',
             'nama_barang.required' => 'Nama barang harus diisi.',
             'nama_barang.string' => 'Nama barang harus berupa teks.',
-            'serial_number.string' => 'Serial number harus berupa teks.',
             'gambar_barang.image' => 'File harus berupa gambar.',
             'gambar_barang.mimes' => 'Format gambar tidak valid. Hanya format jpeg, png, dan gif yang diizinkan.',
             'gambar_barang.max' => 'Ukuran gambar terlalu besar. Maksimum 2MB.'

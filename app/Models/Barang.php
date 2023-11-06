@@ -16,7 +16,6 @@ class Barang extends Model
         'kategori_id',
         'brand_id',
         'nama_barang',
-        'serial_number',
         'gambar_barang',
         ];
 
