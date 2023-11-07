@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StockController;
+use App\Http\Controllers\Api\Stock_inController;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\ManufakturController;
@@ -73,7 +74,13 @@ Route::middleware(['auth:sanctum'])->prefix('/manufaktur')->group(function () {
     Route::delete('/{id}', [ManufakturController::class, 'destroy'])->name('destroy');
 });
 
-
+Route::middleware(['auth:sanctum'])->prefix('/stock_in')->group(function () {
+    Route::get('/', [Stock_inController::class, 'index'])->name('index');
+    Route::post('/', [Stock_inController::class, 'store'])->name('store');
+    Route::get('/{id}', [Stock_inController::class, 'show'])->name('show');
+    Route::put('/{id}', [Stock_inController::class, 'update'])->name('update');
+    Route::delete('/{id}', [Stock_inController::class, 'destroy'])->name('destroy');
+});
 
 Route::resource('/Brand', \App\Http\Controllers\BrandController::class);
 
