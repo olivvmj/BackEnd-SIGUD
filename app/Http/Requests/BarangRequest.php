@@ -29,7 +29,7 @@ class BarangRequest extends FormRequest
             'kategori_id' => 'required|exists:kategori,id',
             'brand_id' => 'required|exists:brand,id',
             'nama_barang' => 'required|string|max:255',
-            'gambar_barang' => 'string|sometimes|mimes:jpeg,png,jpg,gif|max:2048',
+            'gambar_barang' => 'required|image|mimes:jpg,png,jpeg',
         ];
     }
 
