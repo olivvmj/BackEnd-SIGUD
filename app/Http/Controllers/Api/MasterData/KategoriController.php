@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API\MasterData;
 
 use App\Models\Kategori;
 use Illuminate\Support\Str;
@@ -22,7 +22,7 @@ class KategoriController extends Controller
     }
     public function index()
     {
-        $kategori = Kategori::latest()->get();
+        $kategori = Kategori::all();
         return response()->json([
             'data' => KategoriResource::collection($kategori),
             'message' => 'ini kategori',

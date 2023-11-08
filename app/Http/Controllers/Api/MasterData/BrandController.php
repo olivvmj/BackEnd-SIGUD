@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\MasterData;
 
 use App\Models\Brand;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\BrandRequest;
-use Illuminate\Support\Facades\Bus;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\BrandResource;
-use Illuminate\Support\Facades\Validator;
 
 class BrandController extends Controller
 {
@@ -21,12 +18,23 @@ class BrandController extends Controller
     }
     public function index()
     {
-        $brand = Brand::latest()->get();
-        return response()->json([
-            'data' => BrandResource::collection($brand),
-            'message' => 'ini brand',
-            'success' => true
-        ]);
+        $brand = Brand::first();
+        if (empty($brand)) {
+            $response = [
+                "status" => 204,
+                "pesan" => "Data Tidak Ada",
+                "data" => '',
+            ];
+            return response()->json($response);
+
+        } else {
+            $response = [
+                "status" => 200,
+                "pesan" => "Data Brand",
+                "data" => $brand,
+            ];
+            return response()->json($response);
+        }
     }
 
     public function create()
@@ -44,16 +52,16 @@ class BrandController extends Controller
             $this->brand->create($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 201,
                 "pesan" => "Data Berhasil di Tambahkan",
                 "data" => $request->all()
             ]);
         });
     }
-    
+
     public function show($id)
     {
-        return DB::transaction(function () use ($id) {
+        return DB::transaction(function () use ($id){
             $data = $this->brand->findOrFail($id);
 
             return new BrandResource($data);
@@ -81,8 +89,8 @@ class BrandController extends Controller
 
             return response()->json([
                 "status" => true,
-                "pesan" => "Data Berhasil di Simpan",
-                "data" => $request->all() 
+                "pesan" => "Data berhasil diperbarui",
+                "data" => $request->all()
             ]);
     });
     }
@@ -97,7 +105,7 @@ class BrandController extends Controller
 
             return response()->json([
                 "status" => true,
-                "pesan" => "Data Berhasil di Hapus" 
+                "pesan" => "Data Berhasil di Hapus"
             ]);
 
         });
