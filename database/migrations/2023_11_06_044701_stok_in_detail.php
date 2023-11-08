@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('permintaan', function (Blueprint $table) {
+        Schema::create('stock_in_detail', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('barang_id');
-            $table->date('tanggal_permintaan');
-            $table->string('alamat_penerima');
-            $table->string('nama_penerima');
+            $table->unsignedBigInteger('stock_in_id');
+            $table->string('serial_number');
+            $table->string('serial_number_manufaktur');
+            $table->string('status');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('barang_id')->references('id')->on('barang');
+            $table->foreign('stock_in_id')->references('id')->on('stock_in');
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('permintaan');
+        Schema::dropIfExists('stock_in_detail');
     }
 };
