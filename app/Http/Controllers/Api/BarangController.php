@@ -6,11 +6,14 @@ use App\Models\Brand;
 use App\Models\Barang;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BarangRequest;
 use Illuminate\Support\Facades\Http;
 use App\Http\Resources\BarangResource;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class BarangController extends Controller
 {
@@ -20,32 +23,34 @@ class BarangController extends Controller
 
     protected $barang;
     protected $brand;
-
     protected $kategori;
-    public function __construct(Barang $barang, Brand $brand, Kategori $kategori)
 
-    {
+    public function __construct(Barang $barang, Brand $brand, Kategori $kategori){
         $this->barang = $barang;
         $this->brand = $brand;
         $this->kategori = $kategori;
+
+        $this->barang = Barang::join('kategori', 'kategori.id', '=', 'barang.kategori_id')
+                    ->join('brand', 'brand.id', '=', 'barang.brand_id')
+                    ->get();
     }
 
     public function index()
     {
-        $barang = Barang::latest()->get();
+        $barang = Barang::all();
         return response()->json([
+            'status' => true,
+            'message' => 'Daftar Barang',
             'data' => BarangResource::collection($barang),
-            'message' => 'ini barang',
-            'success' => true
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+
     }
 
     /**
@@ -54,16 +59,34 @@ class BarangController extends Controller
     public function store(BarangRequest $request)
     {
         return DB::transaction(function() use ($request) {
+            $filename = "";
 
-            $this->barang->create($request->all());
+            if ($request->hasFile('gambar_barang')) {
+                $image = $request->file('gambar_barang');
+                $filename = Carbon::now()->format('YmdHis').'.'.$image->getClientOriginalExtension();
+                $path = 'barang/'.$filename;
+                Storage::disk('local')->put($path , file_get_contents($image));
+            }
 
-            return response()->json([
-                "status" => true,
-                "pesan" => "Data Berhasil di Tambahkan",
-                "data" => $request->all()
-            ]);
+            $barang = new Barang();
+            $barang->kategori_id = $request->kategori_id;
+            $barang->brand_id = $request->brand_id;
+            $barang->nama_barang = $request->nama_barang;
+            $barang->gambar_barang = $filename;
+            $result = $barang->save();
+
+            if ($result) {
+                return response()->json([
+                    "status" => 200,
+                    "pesan" => "Data Berhasil di Tambahkan",
+                    "data" => $request->all()
+                ]);
+            } else {
+                return response()->json(['success' => false]);
+            }
         });
     }
+
 
     /**
      * Display the specified resource.
@@ -72,8 +95,15 @@ class BarangController extends Controller
     {
         return DB::transaction(function () use ($id) {
             $data = $this->barang->findOrFail($id);
+            if(is_null($data)){
+                return $this->sendError('Data barang tidak ditemukan');
+            }
 
-            return new BarangResource($data);
+            return response()->json([
+                "status" => 200,
+                "pesan" => "Data Barang yang dipilih",
+                "data" => $data,
+            ]);
         });
     }
 
@@ -88,36 +118,67 @@ class BarangController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(BarangRequest $request, string $id)
+
+    public function update(BarangRequest $request, $id)
     {
-        return DB::transaction(function() use ($request, $id) {
+        try {
+            $barang = Barang::findOrFail($id);
+            $barang->fill($request->validated());
 
-            $update = $this->barang->findOrFail($id);
+            if ($request->hasFile('gambar_barang')) {
+                $image = $request->file('gambar_barang');
+                $filename = Carbon::now()->format('YmdHis').'.'.$image->getClientOriginalExtension();
+                $path = 'barang/'.$filename;
+                Storage::disk('local')->put($path, file_get_contents($image));
 
-            $update->update($request->all());
+                if ($barang->gambar_barang && file_exists($barang->gambar_barang)) {
+                    unlink($barang->gambar_barang);
+                }
+
+                $barang->gambar_barang = $filename;
+            }
+
+            $barang->save();
 
             return response()->json([
-                "status" => true,
-                "pesan" => "Data Berhasil di Simpan",
-                "data" => $request->all()
+                'status' => 200,
+                'message' => 'Data berhasil diubah',
+                'data' => $barang
             ]);
-
-        });
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Terjadi kesalahan saat mengubah data',
+                'error' => $e->getMessage()
+            ]);
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        return DB::transaction(function () use ($id) {
-            $this->barang->destroy($id);
+        DB::beginTransaction();
+        try {
+            $barang = Barang::findOrFail($id);
+
+            $barang->delete();
+
+            DB::commit();
 
             return response()->json([
-                "status" => true,
-                "pesan" => "Data Berhasil di Hapus"
+                'status' => true,
+                'message' => 'Success Menghapus Data!',
             ]);
-
-        });
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menghapus data. Error: ' . $e->getMessage(),
+            ]);
+        }
     }
+
 }

@@ -1,31 +1,32 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\MasterData;
 
-use App\Models\Brand;
+use App\Models\Kategori;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\BrandRequest;
 use Illuminate\Support\Facades\Bus;
-use App\Http\Resources\BrandResource;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\KategoriRequest;
+use App\Http\Resources\KategoriResource;
 use Illuminate\Support\Facades\Validator;
 
-class BrandController extends Controller
+class KategoriController extends Controller
 {
-    protected $brand;
+    protected $kategori;
 
-    public function __construct(Brand $brand)
+    public function __construct(Kategori $kategori)
     {
-        $this->brand = $brand;
+        $this->kategori = $kategori;
     }
     public function index()
     {
-        $brand = Brand::latest()->get();
+        $kategori = Kategori::all();
         return response()->json([
-            'data' => BrandResource::collection($brand),
-            'message' => 'ini brand',
-            'success' => true
+            'data' => KategoriResource::collection($kategori),
+            'message' => 'ini kategori',
+            'success' => 200
         ]);
     }
 
@@ -37,33 +38,32 @@ class BrandController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(BrandRequest $request)
+    public function store(KategoriRequest $request)
     {
         return DB::transaction(function() use ($request) {
 
-            $this->brand->create($request->all());
+            $this->kategori->create($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 201,
                 "pesan" => "Data Berhasil di Tambahkan",
                 "data" => $request->all()
             ]);
         });
     }
-    
     public function show($id)
     {
         return DB::transaction(function () use ($id) {
-            $data = $this->brand->findOrFail($id);
+                $data = $this->kategori->findOrFail($id);
 
-            return new BrandResource($data);
-        });
+                return new KategoriResource($data);
+            });
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Brand $brand)
+    public function edit(Kategori $kategori)
     {
         //
     }
@@ -71,33 +71,36 @@ class BrandController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(BrandRequest $request, string $id)
+    public function update(KategoriRequest $request, string $id)
     {
         return DB::transaction(function() use ($request, $id) {
 
-            $update = $this->brand->findOrFail($id);
+            $update = $this->kategori->findOrFail($id);
 
             $update->update($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 200,
                 "pesan" => "Data Berhasil di Simpan",
-                "data" => $request->all() 
+                "data" => $request->all()
             ]);
-    });
+
+        });
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
+
     public function destroy(string $id)
     {
         return DB::transaction(function () use ($id) {
-            $this->brand->destroy($id);
+            $this->kategori->destroy($id);
 
             return response()->json([
-                "status" => true,
-                "pesan" => "Data Berhasil di Hapus" 
+                "status" => 204,
+                "pesan" => "Data Berhasil di Hapus"
             ]);
 
         });

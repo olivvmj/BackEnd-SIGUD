@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Gate;
+use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -23,10 +25,27 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
-            return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
+        Gate::define("superAdmin", function ($user) {
+            if (empty($user->level)) {
+                return redirect("/logout");
+            } else {
+                return $user->hasRole('superAdmin');
+            }
         });
 
-        //
+        Gate::define("operator", function ($user) {
+            if (empty($user->level)) {
+                return redirect("/logout");
+            } else {
+                return $user->hasRole('operator');
+            }
+        });
+        Gate::define("client", function ($user) {
+            if (empty($user->level)) {
+                return redirect("/logout");
+            } else {
+                return $user->hasRole('client');
+            }
+        });
     }
 }
