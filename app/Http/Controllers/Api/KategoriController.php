@@ -26,7 +26,7 @@ class KategoriController extends Controller
         return response()->json([
             'data' => KategoriResource::collection($kategori),
             'message' => 'ini kategori',
-            'success' => true
+            'success' => 200
         ]);
     }
 
@@ -45,19 +45,19 @@ class KategoriController extends Controller
             $this->kategori->create($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 201,
                 "pesan" => "Data Berhasil di Tambahkan",
                 "data" => $request->all()
             ]);
         });
     }
-    public function show( Kategori $kategori)
+    public function show($id)
     {
-        return response()->json([
-            'data' => new KategoriResource($kategori),
-            'message' => 'data found',
-            'success' => true
-        ]);
+        return DB::transaction(function () use ($id) {
+                $data = $this->kategori->findOrFail($id);
+
+                return new KategoriResource($data);
+            });
     }
 
     /**
@@ -80,7 +80,7 @@ class KategoriController extends Controller
             $update->update($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 200,
                 "pesan" => "Data Berhasil di Simpan",
                 "data" => $request->all()
             ]);
@@ -99,7 +99,7 @@ class KategoriController extends Controller
             $this->kategori->destroy($id);
 
             return response()->json([
-                "status" => true,
+                "status" => 204,
                 "pesan" => "Data Berhasil di Hapus"
             ]);
 
