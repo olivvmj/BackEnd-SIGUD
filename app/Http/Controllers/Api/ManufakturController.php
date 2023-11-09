@@ -26,7 +26,7 @@ class ManufakturController extends Controller
         return response()->json([
             'data' => ManufakturResource::collection($manufaktur),
             'message' => 'ini manufaktur',
-            'success' => true
+            'success' => 200
         ]);
     }
 
@@ -45,7 +45,7 @@ class ManufakturController extends Controller
             $this->manufaktur->create($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 201,
                 "pesan" => "Data Berhasil di Tambahkan",
                 "data" => $request->all()
             ]);
@@ -80,7 +80,7 @@ class ManufakturController extends Controller
             $update->update($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 200,
                 "pesan" => "Data Berhasil di Simpan",
                 "data" => $request->all()
             ]);
@@ -99,7 +99,7 @@ class ManufakturController extends Controller
             $this->manufaktur->destroy($id);
 
             return response()->json([
-                "status" => true,
+                "status" => 204,
                 "pesan" => "Data Berhasil di Hapus"
             ]);
 
