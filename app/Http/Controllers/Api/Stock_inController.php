@@ -30,7 +30,7 @@ class Stock_inController extends Controller
         return response()->json([
             'data' => Stock_inResource::collection($stock),
             'message' => 'ini stock in',
-            'success' => true
+            'success' => 200
         ]);
     }
 
@@ -52,7 +52,7 @@ class Stock_inController extends Controller
             $this->stock_in->create($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 201,
                 "pesan" => "Data Berhasil di Tambahkan",
                 "data" => $request->all()
             ]);
@@ -88,7 +88,7 @@ class Stock_inController extends Controller
             $update->update($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 200,
                 "pesan" => "Data Berhasil di Simpan",
                 "data" => $request->all()
             ]);
@@ -105,7 +105,7 @@ class Stock_inController extends Controller
             $this->stock_in->destroy($id);
 
             return response()->json([
-                "status" => true,
+                "status" => 201,
                 "pesan" => "Data Berhasil di Hapus"
             ]);
 
