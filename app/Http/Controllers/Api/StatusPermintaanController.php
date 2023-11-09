@@ -23,7 +23,7 @@ class StatusPermintaanController extends Controller
         return response()->json([
             'data' => StatusPermintaanResource::collection($status_permintaan),
             'message' => 'status permintaan',
-            'success' => true
+            'success' => 200
         ]);
     }
 
@@ -42,19 +42,19 @@ class StatusPermintaanController extends Controller
             $this->status_permintaan->create($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 201,
                 "pesan" => "Data Berhasil di Tambahkan",
                 "data" => $request->all()
             ]);
         });
     }
-    public function show( StatusPermintaan $status_permintaan)
+    public function show($id)
     {
-        return response()->json([
-            'data' => new StatusPermintaanResource($status_permintaan),
-            'message' => 'data found',
-            'success' => true
-        ]);
+        return DB::transaction(function () use ($id) {
+            $data = $this->status_permintaan->findOrFail($id);
+
+            return new StatuspermintaanResource($data);
+        });
     }
 
     /**
@@ -77,7 +77,7 @@ class StatusPermintaanController extends Controller
             $update->update($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 200,
                 "pesan" => "Data Berhasil di Simpan",
                 "data" => $request->all()
             ]);
@@ -96,7 +96,7 @@ class StatusPermintaanController extends Controller
             $this->status_permintaan->destroy($id);
 
             return response()->json([
-                "status" => true,
+                "status" => 204,
                 "pesan" => "Data Berhasil di Hapus"
             ]);
 
