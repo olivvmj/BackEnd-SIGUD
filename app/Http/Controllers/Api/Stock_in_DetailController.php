@@ -27,6 +27,10 @@ class Stock_in_DetailController extends Controller
         $this->stock_in_detail = $stock_in_detail;
         $this->barang = $barang;
         $this->stock_in = $stock_in;
+
+        $this->barang = Stock_in_detail::join('barang', 'barang.id', '=', 'stock_in_detail.barang_id')
+                    ->join('stock_in', 'stock_in.id', '=', 'stock_in_detail.brand_id')
+                    ->get();
     }
 
     public function index()
@@ -35,7 +39,7 @@ class Stock_in_DetailController extends Controller
         return response()->json([
             'data' => Stock_in_DetailResource::collection($stock_in_detail),
             'message' => 'ini stock in detail',
-            'success' => 200
+            'success' => true,
         ]);
     }
 
@@ -54,13 +58,24 @@ class Stock_in_DetailController extends Controller
     {
         return DB::transaction(function() use ($request) {
 
-            $this->stock_in_detail->create($request->all());
+            $filename = "";
+            $stock_in_detail = new Stock_in_Detail();
+            $stock_in_detail->barang_id = $request->barang_id;
+            $stock_in_detail->stock_in_id = $request->stock_in_id;
+            $stock_in_detail->serial_number = $request->serial_number;
+            $stock_in_detail->serial_number_manufaktur = $request->serial_number;
+            $stock_in_detail->status = $request->status;
+            $result = $stock_in_detail->save();
 
-            return response()->json([
-                "status" => 201,
-                "pesan" => "Data Berhasil di Tambahkan",
-                "data" => $request->all()
-            ]);
+            if ($result) {
+                return response()->json([
+                    "status" => 200,
+                    "pesan" => "Data Berhasil di Tambahkan",
+                    "data" => $stock_in_detail
+                ]);
+            } else {
+                return response()->json(['success' => false]);
+            }
         });
     }
 
@@ -71,8 +86,15 @@ class Stock_in_DetailController extends Controller
     {
         return DB::transaction(function () use ($id) {
             $data = $this->stock_in_detail->findOrFail($id);
+            if(is_null($data)){
+                return $this->sendError('Data Stock In Detail tidak ditemukan');
+            }
 
-            return new Stock_in_DetailResource($data);
+            return response()->json([
+                "status" => 200,
+                "pesan" => "Data Stock In Detail yang dipilih",
+                "data" => $data,
+            ]);
         });
     }
 
@@ -101,13 +123,24 @@ class Stock_in_DetailController extends Controller
      */
     public function destroy(string $id)
     {
-        return DB::transaction(function () use ($id) {
-            $this->stock_in_detail->destroy($id);
+        DB::beginTransaction();
+        try {
+            $stock_in_detail = Stock_in_Detail::findOrFail($id);
+
+            $stock_in_detail->delete();
+
+            DB::commit();
 
             return response()->json([
-                "status" => 204,
-                "pesan" => "Data Berhasil di Hapus"
+                'status' => true,
+                'message' => 'Success Menghapus Data!',
             ]);
-        });
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menghapus data. Error: ' . $e->getMessage(),
+            ]);
+        }
     }
 }
