@@ -78,7 +78,7 @@ class BarangController extends Controller
             if ($result) {
                 return response()->json([
                     "status" => 200,
-                    "pesan" => "Data Berhasil di Tambahkan",
+                    "message" => "Data Berhasil di Tambahkan",
                     "data" => $request->all()
                 ]);
             } else {
@@ -101,7 +101,7 @@ class BarangController extends Controller
 
             return response()->json([
                 "status" => 200,
-                "pesan" => "Data Barang yang dipilih",
+                "message" => "Data Barang yang dipilih",
                 "data" => $data,
             ]);
         });
