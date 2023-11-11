@@ -3,14 +3,15 @@
 use Illuminate\Http\Request;
 //use App\Models\StatusPermintaan;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\StockController;
-use App\Http\Controllers\API\Stock_inController;
 use App\Http\Controllers\API\BarangController;
+use App\Http\Controllers\API\Stock_inController;
+use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\ManufakturController;
-use App\Http\Controllers\API\StatusPermintaanController;
-use App\Http\Controllers\API\MasterData\KategoriController;
 use App\Http\Controllers\API\MasterData\BrandController;
+use App\Http\Controllers\API\StatusPermintaanController;
+use App\Http\Controllers\API\Akun\AccountController;
+use App\Http\Controllers\API\MasterData\KategoriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +92,12 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::put('/{id}', [Stock_inController::class, 'update'])->name('update');
         Route::delete('/{id}', [Stock_inController::class, 'destroy'])->name('destroy');
     });
+
+    Route::prefix('/manage-akun')->group(function () {
+        Route::get('/', [AccountController::class, 'index'])->name('index');
+        Route::post('/createOperator', [AccountController::class, 'createOperator'])->name('createOperator');
+        Route::post('/createClient', [AccountController::class, 'createClient'])->name('createClient');
+        Route::delete('/{id}', [AccountController::class, 'destroy'])->middleware('auth', 'can:superAdmin');
+    });
 });
 
-Route::resource('/Brand', \App\Http\Controllers\BrandController::class);
