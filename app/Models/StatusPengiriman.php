@@ -11,6 +11,8 @@ class StatusPengiriman extends Model
 
     protected $table = 'status_pengiriman';
     protected $fillable = [
-        '',
+        'jenis_status',
+        'notes',
+        'tanggal',
     ];
 }
