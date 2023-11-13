@@ -23,7 +23,7 @@ class StatusPermintaanController extends Controller
         return response()->json([
             'data' => StatusPermintaanResource::collection($status_permintaan),
             'message' => 'status permintaan',
-            'success' => true
+            'success' => 200
         ]);
     }
 
@@ -48,13 +48,13 @@ class StatusPermintaanController extends Controller
             ]);
         });
     }
-    public function show( StatusPermintaan $status_permintaan)
+    public function show($id)
     {
-        return response()->json([
-            'data' => new StatusPermintaanResource($status_permintaan),
-            'message' => 'data found',
-            'success' => true
-        ]);
+        return DB::transaction(function () use ($id) {
+            $data = $this->status_permintaan->findOrFail($id);
+
+            return new StatuspermintaanResource($data);
+        });
     }
 
     /**

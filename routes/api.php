@@ -1,16 +1,19 @@
 <?php
 
 use Illuminate\Http\Request;
-//use App\Models\StatusPermintaan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\StockController;
-use App\Http\Controllers\API\BarangController;
 use App\Http\Controllers\API\Stock_inController;
+use App\Http\Controllers\API\Stock_in_DetailController;
+use App\Http\Controllers\API\BarangController;
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\ManufakturController;
+use App\Http\Controllers\API\PermintaanController;
+use App\Http\Controllers\API\PengirimanController;
+use App\Http\Controllers\API\StatusPermintaanController;
+use App\Http\Controllers\API\StatusPengirimanController;
 use App\Http\Controllers\API\MasterData\BrandController;
 use App\Http\Controllers\API\StatusPermintaanController;
-use App\Http\Controllers\API\Akun\AccountController;
 use App\Http\Controllers\API\MasterData\KategoriController;
 
 /*
@@ -61,11 +64,20 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::delete('/{id}', [StatusPermintaanController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('/statuspengiriman')->group(function () {
+        Route::get('/', [StatusPengirimanController::class, 'index'])->name('index');
+        Route::post('/', [StatusPengirimanController::class, 'store'])->name('store');
+        Route::get('/{id}', [StatusPengirimanController::class, 'show'])->name('show');
+        Route::put('/{id}', [StatusPengirimanController::class, 'update'])->name('update');
+        Route::delete('/{id}', [StatusPengirimanController::class, 'destroy'])->name('destroy');
+    });
+
+
     Route::prefix('/barang')->group(function () {
         Route::get('/', [BarangController::class, 'index'])->name('index');
         Route::post('/', [BarangController::class, 'store'])->name('store');
         Route::get('/{id}', [BarangController::class, 'show'])->name('show');
-        Route::put('/{id}', [BarangController::class, 'update'])->name('update');
+        Route::post('/{id}', [BarangController::class, 'update'])->name('update');
         Route::delete('/{id}', [BarangController::class, 'destroy'])->name('destroy');
     });
 
@@ -93,11 +105,27 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::delete('/{id}', [Stock_inController::class, 'destroy'])->name('destroy');
     });
 
-    Route::prefix('/manage-akun')->group(function () {
-        Route::get('/', [AccountController::class, 'index'])->name('index');
-        Route::post('/createOperator', [AccountController::class, 'createOperator'])->name('createOperator');
-        Route::post('/createClient', [AccountController::class, 'createClient'])->name('createClient');
-        Route::delete('/{id}', [AccountController::class, 'destroy'])->middleware('auth', 'can:superAdmin');
+    Route::prefix('/stock_in_detail')->group(function () {
+        Route::get('/', [Stock_in_DetailController::class, 'index'])->name('index');
+        Route::post('/', [Stock_in_DetailController::class, 'store'])->name('store');
+        Route::get('/{id}', [Stock_in_DetailController::class, 'show'])->name('show');
+        Route::put('/{id}', [Stock_in_DetailController::class, 'update'])->name('update');
+        Route::delete('/{id}', [Stock_in_DetailController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('/permintaan')->group(function () {
+        Route::get('/', [PermintaanController::class, 'index'])->name('index');
+        Route::post('/', [PermintaanController::class, 'store'])->name('store');
+        Route::get('/{id}', [PermintaanController::class, 'show'])->name('show');
+        Route::put('/{id}', [PermintaanController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PermintaanController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('/pengiriman')->group(function () {
+        Route::get('/', [PengirimanController::class, 'index'])->name('index');
+        Route::post('/', [PengirimanController::class, 'store'])->name('store');
+        Route::get('/{id}', [PengirimanController::class, 'show'])->name('show');
+        Route::put('/{id}', [PengirimanController::class, 'update'])->name('update');
+        Route::delete('/{id}', [PengirimanController::class, 'destroy'])->name('destroy');
     });
 });
-

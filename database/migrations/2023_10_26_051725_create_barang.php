@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('kategori_id');
             $table->unsignedBigInteger('brand_id');
             $table->string('nama_barang');
-            $table->string('gambar_barang');
+            $table->string('gambar_barang')->nullable();
             $table->timestamps();
 
             $table->foreign('kategori_id')->references('id')->on('kategori');
