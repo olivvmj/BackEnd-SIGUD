@@ -21,12 +21,12 @@ class StatusPengirimanController extends Controller
     {
         $this->statuspengiriman = $statuspengiriman;
     }
-    public function index(Request $request)
+    public function index()
     {
         $statuspengiriman = StatusPengiriman::latest()->get();
         return response()->json([
             'data' => StatusPengirimanResource::collection($statuspengiriman),
-            'message' => 'ini tampilan status',
+            'message' => 'ini tampilan status pengiriman',
             'success' => true
         ]);
     }
@@ -42,14 +42,14 @@ class StatusPengirimanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StatusPengirimanRequest $request)
     {
         return DB::transaction(function() use ($request) {
 
             $this->statuspengiriman->create($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 201,
                 "pesan" => "Data Berhasil di Tambahkan",
                 "data" => $request->all()
             ]);
@@ -62,9 +62,13 @@ class StatusPengirimanController extends Controller
     public function show($id)
     {
         return DB::transaction(function () use ($id) {
-            $data = $this->statuspengiriman->findOrFail($id);
+            $data = StatusPengiriman::findOrFail($id);
 
-            return new StatusPengirimanResource($data);
+            return response()->json([
+                'status' => 200,
+                'pesan' => 'Data Status Pengiriman yang dipilih',
+                'data' => $data,
+            ]);
         });
     }
 
@@ -88,9 +92,9 @@ class StatusPengirimanController extends Controller
             $update->update($request->all());
 
             return response()->json([
-                "status" => true,
+                "status" => 200,
                 "pesan" => "Data Berhasil di Simpan",
-                "data" => $request->all() 
+                "data" => $request->all()
             ]);
 
         });
@@ -101,15 +105,24 @@ class StatusPengirimanController extends Controller
      */
     public function destroy(string $id)
     {
-        return DB::transaction(function () use ($id) {
-            $this->statuspengiriman->destroy($id);
+        DB::beginTransaction();
+        try {
+            $statuspengiriman = StatusPengiriman::findOrFail($id);
+
+            $statuspengiriman->delete();
+
+            DB::commit();
 
             return response()->json([
-                "status" => true,
-                "pesan" => "Data Berhasil di Hapus" 
+                'status' => true,
+                'message' => 'Success Menghapus Data!',
             ]);
-
-        });
-
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menghapus data. Error: ' . $e->getMessage(),
+            ]);
+        }
     }
 }
