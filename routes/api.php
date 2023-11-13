@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\KategoriController;
+use App\Http\Controllers\Api\StatusPengirimanController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +39,13 @@ Route::middleware(['auth:sanctum'])->prefix('/kategori')->group(function () {
     Route::delete('/{id}', [KategoriController::class, 'destroy'])->name('destroy');
 });
 
+Route::resource('/brand', \App\Http\Controllers\BrandController::class);
 
-Route::resource('/Brand', \App\Http\Controllers\BrandController::class);
+Route::middleware(['auth:sanctum'])->prefix('/statuspengiriman')->group(function () {
+    Route::get('/', [StatusPengirimanController::class, 'index'])->name('index');
+    Route::post('/', [StatusPengirimanController::class, 'store'])->name('store');
+    Route::get('/{id}', [StatusPengirimanController::class, 'show'])->name('show');
+    Route::put('/{id}', [StatusPengirimanController::class, 'update'])->name('update');
+    Route::delete('/{id}', [StatusPengirimanController::class, 'destroy'])->name('destroy');
+});
 
