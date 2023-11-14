@@ -29,9 +29,9 @@ class Stock_inController extends Controller
     }
     public function index()
     {
-        $stock = Stock_in::latest()->get();
+        $stock_in = Stock_in::latest()->get();
         return response()->json([
-            'data' => Stock_inResource::collection($stock),
+            'data' => Stock_inResource::collection($stock_in),
             'message' => 'ini stock in',
             'success' => 200
         ]);

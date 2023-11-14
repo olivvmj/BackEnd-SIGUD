@@ -24,9 +24,10 @@ class KategoriController extends Controller
     {
         $kategori = Kategori::all();
         return response()->json([
-            'data' => KategoriResource::collection($kategori),
+            // 'data' => KategoriResource::collection($kategori),
             'message' => 'ini kategori',
-            'success' => 200
+            'success' => 200,
+            'data' => $kategori
         ]);
     }
 

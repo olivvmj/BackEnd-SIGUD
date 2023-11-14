@@ -6,6 +6,7 @@ use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\StockController;
 use App\Http\Controllers\API\Stock_inController;
 use App\Http\Controllers\API\Stock_in_DetailController;
+use App\Http\Controllers\API\Stock_OutController;
 use App\Http\Controllers\API\BarangController;
 use App\Http\Controllers\API\ManufakturController;
 use App\Http\Controllers\API\PermintaanController;
@@ -126,5 +127,13 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::get('/{id}', [PengirimanController::class, 'show'])->name('show');
         Route::put('/{id}', [PengirimanController::class, 'update'])->name('update');
         Route::delete('/{id}', [PengirimanController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('/stock_out')->group(function () {
+        Route::get('/', [Stock_OutController::class, 'index'])->name('index');
+        Route::post('/', [Stock_OutController::class, 'store'])->name('store');
+        Route::get('/{id}', [Stock_OutController::class, 'show'])->name('show');
+        Route::put('/{id}', [Stock_OutController::class, 'update'])->name('update');
+        Route::delete('/{id}', [Stock_OutController::class, 'destroy'])->name('destroy');
     });
 });
