@@ -28,7 +28,7 @@ class Stock_in_DetailController extends Controller
         $this->barang = $barang;
         $this->stock_in = $stock_in;
 
-        $this->barang = Stock_in_detail::join('barang', 'barang.id', '=', 'stock_in_detail.barang_id')
+        $this->stock_in = Stock_in_detail::join('barang', 'barang.id', '=', 'stock_in_detail.barang_id')
                     ->join('stock_in', 'stock_in.id', '=', 'stock_in_detail.stock_in_id')
                     ->get();
     }
