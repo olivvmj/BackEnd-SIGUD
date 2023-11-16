@@ -28,7 +28,7 @@ class AuthController extends Controller
             if (!$data || !Hash::check($request->password, $data->password)) {
                 return response()->json([
                     "status" => false,
-                    "pesan" => "Maaf, Akun Anda Tidak Ditemukan"
+                    "message" => "Maaf, Akun Anda Tidak Ditemukan"
                 ], 400);
             }
 
@@ -51,7 +51,7 @@ class AuthController extends Controller
 
         return response()->json([
             "success" => true,
-            "pesan" => "Logout berhasil"
+            "message" => "Logout berhasil"
         ], 200);
     }
 }

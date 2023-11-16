@@ -22,7 +22,7 @@ class BrandController extends Controller
         if (empty($brand)) {
             $response = [
                 "status" => 204,
-                "pesan" => "Data Tidak Ada",
+                "message" => "Data Tidak Ada",
                 "data" => '',
             ];
             return response()->json($response);
@@ -30,7 +30,7 @@ class BrandController extends Controller
         } else {
             $response = [
                 "status" => 200,
-                "pesan" => "Data Brand",
+                "message" => "Data Brand",
                 "data" => $brand,
             ];
             return response()->json($response);
@@ -53,7 +53,7 @@ class BrandController extends Controller
 
             return response()->json([
                 "status" => 201,
-                "pesan" => "Data Berhasil di Tambahkan",
+                "message" => "Data Berhasil di Tambahkan",
                 "data" => $request->all()
             ]);
         });
@@ -89,7 +89,7 @@ class BrandController extends Controller
 
             return response()->json([
                 "status" => true,
-                "pesan" => "Data berhasil diperbarui",
+                "message" => "Data berhasil diperbarui",
                 "data" => $request->all()
             ]);
     });
@@ -105,7 +105,7 @@ class BrandController extends Controller
 
             return response()->json([
                 "status" => true,
-                "pesan" => "Data Berhasil di Hapus"
+                "message" => "Data Berhasil di Hapus"
             ]);
 
         });
