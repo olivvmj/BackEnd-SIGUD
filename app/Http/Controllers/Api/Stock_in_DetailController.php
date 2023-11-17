@@ -29,7 +29,7 @@ class Stock_in_DetailController extends Controller
         $this->stock_in = $stock_in;
 
         $this->barang = Stock_in_detail::join('barang', 'barang.id', '=', 'stock_in_detail.barang_id')
-                    ->join('stock_in', 'stock_in.id', '=', 'stock_in_detail.brand_id')
+                    ->join('stock_in', 'stock_in.id', '=', 'stock_in_detail.stock_in_id')
                     ->get();
     }
 
@@ -37,9 +37,9 @@ class Stock_in_DetailController extends Controller
     {
         $stock_in_detail = Stock_in_Detail::latest()->get();
         return response()->json([
-            'data' => Stock_in_DetailResource::collection($stock_in_detail),
-            'message' => 'ini stock in detail',
             'success' => true,
+            'message' => 'ini stock in detail',
+            'data' => Stock_in_DetailResource::collection($stock_in_detail),
         ]);
     }
 
@@ -58,7 +58,6 @@ class Stock_in_DetailController extends Controller
     {
         return DB::transaction(function() use ($request) {
 
-            $filename = "";
             $stock_in_detail = new Stock_in_Detail();
             $stock_in_detail->barang_id = $request->barang_id;
             $stock_in_detail->stock_in_id = $request->stock_in_id;

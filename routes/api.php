@@ -3,16 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\StockController;
-use App\Http\Controllers\API\Stock_inController;
-use App\Http\Controllers\API\Stock_in_DetailController;
 use App\Http\Controllers\API\BarangController;
+use App\Http\Controllers\API\Stock_inController;
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\ManufakturController;
-use App\Http\Controllers\API\PermintaanController;
 use App\Http\Controllers\API\PengirimanController;
-use App\Http\Controllers\API\StatusPermintaanController;
-use App\Http\Controllers\API\StatusPengirimanController;
+use App\Http\Controllers\API\PermintaanController;
+use App\Http\Controllers\API\Akun\AccountController;
+use App\Http\Controllers\API\Stock_in_DetailController;
 use App\Http\Controllers\API\MasterData\BrandController;
+use App\Http\Controllers\API\StatusPengirimanController;
 use App\Http\Controllers\API\StatusPermintaanController;
 use App\Http\Controllers\API\MasterData\KategoriController;
 
@@ -40,6 +40,11 @@ Route::middleware('auth:sanctum')->group(function() {
 });
 
 Route::middleware(['auth:sanctum'])->group(function() {
+    Route::prefix('/manage-akun')->group(function() {
+        Route::post('/createClient', [AccountController::class, 'createClient'])->name('createClient');
+        Route::post('/createOperator', [AccountController::class, 'createOperator'])->name('createOperator');
+    });
+
     Route::prefix("kategori")->group(function() {
         Route::get('/', [KategoriController::class, 'index'])->name('index');
         Route::post('/', [KategoriController::class, 'store'])->name('store');

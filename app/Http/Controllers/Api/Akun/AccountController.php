@@ -52,7 +52,7 @@ class AccountController extends Controller
 
     public function createOperator(Request $request)
     {
-        if ($request->user() && $request->user()->hasRole('superAdmin')) {
+        // if ($request->user() && $request->user()->hasRole('superAdmin')) {
             // Menyiapkan nilai default untuk pengguna
             $default_user_value = [
                 'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
@@ -88,17 +88,17 @@ class AccountController extends Controller
                 'message' => 'Success Add Data Operator!',
                 'data' => $dataUser
             ]);
-        } else {
-            return response()->json([
-                'status' => 403,
-                'message' => 'Permission denied.',
-            ]);
-        }
+        // } else {
+        //     return response()->json([
+        //         'status' => 403,
+        //         'message' => 'Permission denied.',
+        //     ]);
+        // }
     }
 
     public function createClient(Request $request)
     {
-        if ($request->user() && $request->user()->hasRole('superAdmin')) {
+        // if ($request->user() && $request->user()->hasRole('superAdmin')) {
             // Menyiapkan nilai default untuk pengguna
             $default_user_value = [
                 'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
@@ -134,12 +134,12 @@ class AccountController extends Controller
                 'message' => 'Success Add Data Operator!',
                 'data' => $dataUser
             ]);
-        } else {
-            return response()->json([
-                'status' => 403,
-                'message' => 'Permission denied.',
-            ]);
-        }
+        // } else {
+        //     return response()->json([
+        //         'status' => 403,
+        //         'message' => 'Permission denied.',
+        //     ]);
+        // }
     }
 
     /**

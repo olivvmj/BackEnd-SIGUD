@@ -121,6 +121,7 @@ class BarangController extends Controller
 
     public function update(BarangRequest $request, $id)
     {
+        DB::beginTransaction();
         try {
             $barang = Barang::findOrFail($id);
             $barang->fill($request->validated());
@@ -139,6 +140,7 @@ class BarangController extends Controller
             }
 
             $barang->save();
+            DB::commit();
 
             return response()->json([
                 'status' => 200,
@@ -146,6 +148,7 @@ class BarangController extends Controller
                 'data' => $barang
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => 500,
                 'message' => 'Terjadi kesalahan saat mengubah data',
