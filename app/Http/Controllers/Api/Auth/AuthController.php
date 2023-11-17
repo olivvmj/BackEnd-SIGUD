@@ -31,7 +31,8 @@ class AuthController extends Controller
                     "message" => "Maaf, Akun Anda Tidak Ditemukan"
                 ], 400);
             }
-
+            $user = Auth::user();
+            $user->hasRole('superAdmin');
             $token = $data->createToken("auth_token")->plainTextToken;
 
             $response = [

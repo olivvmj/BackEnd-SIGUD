@@ -26,7 +26,7 @@ class KategoriController extends Controller
         return response()->json([
             'data' => KategoriResource::collection($kategori),
             'message' => 'ini kategori',
-            'success' => true
+            'success' => 200
         ]);
     }
 
@@ -51,13 +51,13 @@ class KategoriController extends Controller
             ]);
         });
     }
-    public function show( Kategori $kategori)
+    public function show($id)
     {
-        return response()->json([
-            'data' => new KategoriResource($kategori),
-            'message' => 'data found',
-            'success' => true
-        ]);
+        return DB::transaction(function () use ($id) {
+                $data = $this->kategori->findOrFail($id);
+
+                return new KategoriResource($data);
+            });
     }
 
     /**
