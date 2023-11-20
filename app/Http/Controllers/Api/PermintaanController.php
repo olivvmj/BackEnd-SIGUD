@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Barang;
 use App\Models\Permintaan;
@@ -9,8 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PermintaanRequest;
-use App\Http\Resources\PermintaanResource;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\PermintaanResource;
 
 class PermintaanController extends Controller
 {
@@ -122,6 +123,31 @@ class PermintaanController extends Controller
             ]);
 
         });
+    }
+
+    public function validasiPermintaan($id, $status)
+    {
+        $permintaan = Permintaan::find($id);
+
+        if (!$permintaan) {
+            return response()->json(['message' => 'Permintaan tidak ditemukan'], 404);
+        }
+
+        if ($status == 'diterima') {
+            $permintaan->status = 'diterima';
+            $permintaan->save();
+
+            Log::info('Permintaan diterima: ' . $permintaan->id);
+            return response()->json(['message' => 'Permintaan diterima']);
+        } elseif ($status == 'ditolak') {
+            $permintaan->status = 'ditolak';
+            $permintaan->save();
+
+            Log::info('Permintaan ditolak: ' . $permintaan->id);
+            return response()->json(['message' => 'Permintaan ditolak']);
+        } else {
+            return response()->json(['message' => 'Status tidak valid'], 400);
+        }
     }
 
     /**

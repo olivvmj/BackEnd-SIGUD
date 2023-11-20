@@ -3,19 +3,20 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\StockController;
-use App\Http\Controllers\API\Stock_inController;
-use App\Http\Controllers\API\Stock_in_DetailController;
-use App\Http\Controllers\API\Stock_OutController;
-use App\Http\Controllers\API\Stock_out_DetailController;
 use App\Http\Controllers\API\BarangController;
+use App\Http\Controllers\API\Stock_inController;
 use App\Http\Controllers\API\Auth\AuthController;
+use App\Http\Controllers\API\Stock_OutController;
 use App\Http\Controllers\API\ManufakturController;
-use App\Http\Controllers\API\PermintaanController;
 use App\Http\Controllers\API\PengirimanController;
-use App\Http\Controllers\API\StatusPermintaanController;
-use App\Http\Controllers\API\StatusPengirimanController;
+use App\Http\Controllers\API\PermintaanController;
+use App\Http\Controllers\API\Akun\AccountController;
+use App\Http\Controllers\API\Stock_in_DetailController;
 use App\Http\Controllers\API\MasterData\BrandController;
+use App\Http\Controllers\API\StatusPengirimanController;
 use App\Http\Controllers\API\StatusPermintaanController;
+// use App\Http\Controllers\API\StatusPermintaanController;
+use App\Http\Controllers\API\Stock_out_DetailController;
 use App\Http\Controllers\API\MasterData\KategoriController;
 
 /*
@@ -121,6 +122,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::get('/{id}', [PermintaanController::class, 'show'])->name('show');
         Route::put('/{id}', [PermintaanController::class, 'update'])->name('update');
         Route::delete('/{id}', [PermintaanController::class, 'destroy'])->name('destroy');
+        Route::put('/{id}/{status}', [PermintaanController::class, 'validasiPermintaan']);
     });
 
     Route::prefix('/pengiriman')->group(function () {
@@ -145,5 +147,10 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::get('/{id}', [Stock_out_DetailController::class, 'show'])->name('show');
         Route::put('/{id}', [Stock_out_DetailController::class, 'update'])->name('update');
         Route::delete('/{id}', [Stock_out_DetailController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('/manage-akun')->group(function() {
+        Route::post('/createClient', [AccountController::class, 'createClient'])->name('createClient');
+        Route::post('/createOperator', [AccountController::class, 'createOperator'])->name('createOperator');
     });
 });

@@ -18,7 +18,7 @@ class BrandController extends Controller
     }
     public function index()
     {
-        $brand = Brand::first();
+        $brand = Brand::all();
         if (empty($brand)) {
             $response = [
                 "status" => 204,
@@ -31,7 +31,7 @@ class BrandController extends Controller
             $response = [
                 "status" => 200,
                 "message" => "Data Brand",
-                "data" => $brand,
+                "data" => BrandResource::collection($brand),
             ];
             return response()->json($response);
         }
