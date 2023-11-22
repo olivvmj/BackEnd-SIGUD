@@ -54,12 +54,15 @@ class ManufakturController extends Controller
     public function show($id)
     {
         return DB::transaction(function () use ($id) {
-            $data = $this->manufaktur->findOrFail($id);
+            $data = Manufaktur::findOrFail($id);
 
-            return new ManufakturResource($data);
+            return response()->json([
+                'status' => 200,
+                'pesan' => 'Data Supplier yang dipilih',
+                'data' => $data,
+            ]);
         });
     }
-
     /**
      * Show the form for editing the specified resource.
      */
