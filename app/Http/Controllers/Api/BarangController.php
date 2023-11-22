@@ -91,21 +91,7 @@ class BarangController extends Controller
     /**
      * Display the specified resource.
      */
-    // public function show($id)
-    // {
-    //     return DB::transaction(function () use ($id) {
-    //         $data = $this->barang->findOrFail($id);
-    //         if(is_null($data)){
-    //             return $this->sendError('Data barang tidak ditemukan');
-    //         }
 
-    //         return response()->json([
-    //             "status" => 200,
-    //             "message" => "Data Barang yang dipilih",
-    //             "data" => $data,
-    //         ]);
-    //     });
-    // }
 
     public function show($id)
     {
