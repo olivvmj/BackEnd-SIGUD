@@ -61,6 +61,7 @@ class Stock_out_DetailController extends Controller
             $stock_out_detail = new Stock_out_Detail();
             $stock_out_detail->barang_id = $request->barang_id;
             $stock_out_detail->stock_out_id = $request->stock_out_id;
+            $stock_out_detail->permintaan_id = $request->permintaan_id;
             $stock_out_detail->serial_number = $request->serial_number;
             $stock_out_detail->serial_number_manufaktur = $request->serial_number_manufaktur;
             $stock_out_detail->status = $request->status;

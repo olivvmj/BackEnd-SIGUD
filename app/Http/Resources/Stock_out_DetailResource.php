@@ -17,6 +17,7 @@ class Stock_out_DetailResource extends JsonResource
         return [
             'barang_id' => $this->barang_id,
             'stock_out_id' => $this->stock_out_id,
+            'permintaan_id' => $this->permintaan_id,
             'serial_number' => $this->serial_number,
             'serial_number_manufaktur' => $this->serial_number_manufaktur,
             'status' => $this->status,

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Barang;
 use App\Models\Permintaan;
+use App\Models\Stock_out_Detail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -137,17 +138,42 @@ class PermintaanController extends Controller
             $permintaan->status = 'diterima';
             $permintaan->save();
 
-            Log::info('Permintaan diterima: ' . $permintaan->id);
-            return response()->json(['message' => 'Permintaan diterima']);
-        } elseif ($status == 'ditolak') {
-            $permintaan->status = 'ditolak';
-            $permintaan->save();
+            // Mendapatkan informasi dari tabel Permintaan
+            $tanggalPermintaan = $permintaan->tanggal_permintaan;
+            $alamatPenerima = $permintaan->alamat_penerima;
+            $namaPenerima = $permintaan->nama_penerima;
 
-            Log::info('Permintaan ditolak: ' . $permintaan->id);
-            return response()->json(['message' => 'Permintaan ditolak']);
+            // Nomor Dokumen yang unik (contoh: menggunakan ID permintaan)
+            $nomorDoc = $permintaan->id . '/BAST/JMI-JSA/' . date('m/Y');
+
+            // Informasi dari tabel Stock_out_detail
+            $stock_out_detail = Stock_out_Detail::where('permintaan_id', $id)->get();
+
+            // Gunakan data ini untuk mengisi template berita acara
+            $data = [
+                'nomor_doc' => $nomorDoc,
+                'tanggal' => $tanggalPermintaan,
+                'alamat' => $alamatPenerima,
+                'nama' => $namaPenerima,
+                'stock_detail' => $stock_out_detail
+            ];
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Berita acara berhasil dibuat',
+                'data' => $data,
+            ]);
+        } elseif ($status == 'ditolak') {
+
+            return response()->json([
+                'status' => 400,
+                'message' => 'Permintaan ditolak',
+            ]);
         } else {
+            // Jika status tidak valid (bukan 'diterima' atau 'ditolak')
             return response()->json(['message' => 'Status tidak valid'], 400);
         }
+
     }
 
     /**
