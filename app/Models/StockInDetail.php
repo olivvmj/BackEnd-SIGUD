@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Barang;
+use App\Models\StockIn;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Stock_in_Detail extends Model
+class StockInDetail extends Model
 {
     use HasFactory;
 
@@ -22,12 +24,11 @@ class Stock_in_Detail extends Model
 
         public function barang()
         {
-            return $this->belongsTo(Barang::class, "barang_id");
+            return $this->belongsTo(Barang::class, 'barang_id');
         }
 
-        public function stock_in()
+        public function stockIn()
         {
-            return $this->belongsTo(Stock_in::class, "stock_in_id");
+            return $this->belongsTo(StockIn::class, 'stock_in_id')->onDelete('cascade');
         }
-
 }

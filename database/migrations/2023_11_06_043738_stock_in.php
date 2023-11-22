@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('supplier_id');
             $table->string('nama_stock_in');
-            $table->string('kuantiti');
+            $table->integer('kuantiti');
             $table->timestamps();
 
             $table->foreign('supplier_id')->references('id')->on('supplier');

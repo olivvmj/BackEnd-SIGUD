@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 use App\Models\StatusPengiriman;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
 use App\Http\Requests\PengirimanRequest;
 use App\Http\Resources\PengirimanResource;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PengirimanController extends Controller
 {
@@ -33,11 +35,12 @@ class PengirimanController extends Controller
     }
     public function index()
     {
-        $pengiriman = Pengiriman::latest()->get();
+        $pengiriman = Pengiriman::all();
         return response()->json([
-            'data' => PengirimanResource::collection($pengiriman),
+            'kode' => 200,
+            'status' => true,
             'message' => 'ini Pengiriman',
-            'success' => true,
+            'data' => PengirimanResource::collection($pengiriman)
         ]);
     }
 
@@ -54,25 +57,31 @@ class PengirimanController extends Controller
      */
     public function store(Request $request)
     {
-        return DB::transaction(function() use ($request) {
+        try {
+            return DB::transaction(function () use ($request) {
+                $pengiriman = new Pengiriman();
+                $pengiriman->permintaan_id = $request->permintaan_id;
+                $pengiriman->status_pengiriman_id = $request->status_pengiriman_id;
+                $pengiriman->tanggal_pengiriman = $request->tanggal_pengiriman;
+                $result = $pengiriman->save();
 
-            $filename = "";
-            $pengiriman = new Pengiriman();
-            $pengiriman->permintaan_id = $request->permintaan_id;
-            $pengiriman->status_pengiriman_id = $request->status_pengiriman_id;
-            $pengiriman->tanggal_pengiriman = $request->tanggal_pengiriman;
-            $result = $pengiriman->save();
-
-            if ($result) {
-                return response()->json([
-                    "status" => 200,
-                    "pesan" => "Data Berhasil di Tambahkan",
-                    "data" => $pengiriman
-                ]);
-            } else {
-                return response()->json(['success' => false]);
-            }
-        });
+                if ($result) {
+                    return response()->json([
+                        'kode' => 201,
+                        'status' => true,
+                        'message' => "Data Berhasil di Tambahkan",
+                        'data' => $pengiriman
+                    ]);
+                }
+            });
+        } catch (QueryException $e) {
+            return response()->json([
+                'kode' => 500,
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menambahkan data',
+                'error' => $e->getMessage()
+            ]);
+        } 
     }
 
     /**
@@ -84,8 +93,9 @@ class PengirimanController extends Controller
             $data = Pengiriman::findOrFail($id);
 
             return response()->json([
-                'status' => 200,
-                'pesan' => 'Data Pengiriman yang dipilih',
+                'kode' => 200,
+                'status' => true,
+                'message' => 'Data Pengiriman yang dipilih',
                 'data' => $data,
             ]);
         });
@@ -104,19 +114,34 @@ class PengirimanController extends Controller
      */
     public function update(PengirimanRequest $request, string $id)
     {
-        return DB::transaction(function() use ($request, $id) {
+        try {
+            return DB::transaction(function () use ($request, $id) {
+                $update = $this->pengiriman->findOrFail($id);
 
-            $update = $this->pengiriman->findOrFail($id);
+                $update->update($request->all());
 
-            $update->update($request->all());
-
+                return response()->json([
+                    'kode' => 200,
+                    'status' => true,
+                    'message' => "Data Berhasil diupdate",
+                    'data' => $update
+                ]);
+            });
+        } catch (ModelNotFoundException $e) {
             return response()->json([
-                "status" => 200,
-                "pesan" => "Data Berhasil di Simpan",
-                "data" => $request->all()
+                'kode' => 404,
+                'status' => false,
+                'message' => 'Data tidak ditemukan',
+                'error' => $e->getMessage()
             ]);
-
-        });
+        } catch (QueryException $e) {
+            return response()->json([
+                'kode' => 500,
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan data',
+                'error' => $e->getMessage()
+            ]);
+        } 
     }
 
     /**
@@ -133,14 +158,17 @@ class PengirimanController extends Controller
             DB::commit();
 
             return response()->json([
+                'kode' => 200,
                 'status' => true,
                 'message' => 'Success Menghapus Data!',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
+                'kode' => 500,
                 'status' => false,
-                'message' => 'Terjadi kesalahan saat menghapus data. Error: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan saat menghapus data',
+                'error' => $e->getMessage()
             ]);
         }
     }

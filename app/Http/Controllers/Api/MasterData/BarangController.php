@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API\MasterData;
 
 use App\Models\Brand;
 use App\Models\Barang;
@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Resources\BarangResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BarangController extends Controller
 {
@@ -26,24 +27,36 @@ class BarangController extends Controller
     protected $kategori;
 
     public function __construct(Barang $barang, Brand $brand, Kategori $kategori){
-        $this->barang = $barang;
         $this->brand = $brand;
         $this->kategori = $kategori;
 
         $this->barang = Barang::join('kategori', 'kategori.id', '=', 'barang.kategori_id')
                     ->join('brand', 'brand.id', '=', 'barang.brand_id')
+                    ->select('kategori.nama_kategori', 'brand.nama_brand', 'barang.nama_barang', 'barang.gambar_barang')
                     ->get();
     }
 
     public function index()
     {
         $barang = Barang::all();
+
+        if ($barang->isEmpty()) {
+            return response()->json([
+                'kode' => 404,
+                'status' => false,
+                'message' => 'Daftar barang kosong',
+                'error' => 'Tidak ada barang yang tersedia',
+            ]);
+        }
+
         return response()->json([
+            'kode' => 200,
             'status' => true,
             'message' => 'Daftar Barang',
             'data' => BarangResource::collection($barang),
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -58,33 +71,42 @@ class BarangController extends Controller
      */
     public function store(BarangRequest $request)
     {
-        return DB::transaction(function() use ($request) {
-            $filename = "";
+        try {
+            return DB::transaction(function() use ($request) {
+                $filename = "";
 
-            if ($request->hasFile('gambar_barang')) {
-                $image = $request->file('gambar_barang');
-                $filename = Carbon::now()->format('YmdHis').'.'.$image->getClientOriginalExtension();
-                $path = 'barang/'.$filename;
-                Storage::disk('local')->put($path , file_get_contents($image));
-            }
+                if ($request->hasFile('gambar_barang')) {
+                    $image = $request->file('gambar_barang');
+                    $filename = Carbon::now()->format('YmdHis').'.'.$image->getClientOriginalExtension();
+                    $path = 'barang/'.$filename;
+                    Storage::disk('local')->put($path , file_get_contents($image));
+                }
 
-            $barang = new Barang();
-            $barang->kategori_id = $request->kategori_id;
-            $barang->brand_id = $request->brand_id;
-            $barang->nama_barang = $request->nama_barang;
-            $barang->gambar_barang = $filename;
-            $result = $barang->save();
+                $barang = new Barang();
+                $barang->kategori_id = $request->kategori_id;
+                $barang->brand_id = $request->brand_id;
+                $barang->nama_barang = $request->nama_barang;
+                $barang->gambar_barang = $filename;
+                $result = $barang->save();
 
-            if ($result) {
-                return response()->json([
-                    "status" => 200,
-                    "message" => "Data Berhasil di Tambahkan",
-                    "data" => $request->all()
-                ]);
-            } else {
-                return response()->json(['success' => false]);
-            }
-        });
+                if ($result) {
+                    return response()->json([
+                        'kode' => 200,
+                        'status' => true,
+                        'message' => "Data Berhasil di Tambahkan",
+                        'data' => $barang
+                    ]);
+                }
+            });
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'kode' => 500,
+                'status' => false,
+                'message' => "Terjadi kesalahan saat menyimpan data. Error: ",
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 
 
@@ -94,16 +116,24 @@ class BarangController extends Controller
     public function show($id)
     {
         return DB::transaction(function () use ($id) {
-            $data = $this->barang->findOrFail($id);
-            if(is_null($data)){
-                return $this->sendError('Data barang tidak ditemukan');
-            }
+            try {
+                $data = $this->barang->findOrFail($id);
 
-            return response()->json([
-                "status" => 200,
-                "message" => "Data Barang yang dipilih",
-                "data" => $data,
-            ]);
+                return response()->json([
+                    'kode' => 200,
+                    'status' => true,
+                    'message' => "Data Barang yang dipilih",
+                    'data' => $data,
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'kode' => 404,
+                    'status' => false,
+                    'message' => "Data barang tidak ditemukan",
+                    'error' => $e->getMessage()
+                ]);
+            }
         });
     }
 
@@ -143,14 +173,16 @@ class BarangController extends Controller
             DB::commit();
 
             return response()->json([
-                'status' => 200,
+                'kode' => 200,
+                'status' => true,
                 'message' => 'Data berhasil diubah',
                 'data' => $barang
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status' => 500,
+                'kode' => 500,
+                'status' => false,
                 'message' => 'Terjadi kesalahan saat mengubah data',
                 'error' => $e->getMessage()
             ]);
@@ -172,14 +204,17 @@ class BarangController extends Controller
             DB::commit();
 
             return response()->json([
+                'kode' => 200,
                 'status' => true,
                 'message' => 'Success Menghapus Data!',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
+                'kode' => 500,
                 'status' => false,
-                'message' => 'Terjadi kesalahan saat menghapus data. Error: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan saat menghapus data. Error: ',
+                'error' => $e->getMessage(),
             ]);
         }
     }
