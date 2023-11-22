@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 
-class ManufakturRequest extends FormRequest
+class SupplierRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,14 +26,14 @@ class ManufakturRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nama_manufaktur' => 'required|string|max:255',
+            'nama_supplier' => 'required|string|max:255',
         ];
     }
 
     public function message()
     {
         return [
-            'required' =>'kolom nama manufaktur wajib diisi',
+            'required' =>'kolom nama supplier wajib diisi',
         ];
     }
 
@@ -41,7 +41,7 @@ class ManufakturRequest extends FormRequest
     {
         $response = new JsonResponse([
             "messages" => $validator->errors(),
-            "status" => 422
+            'status' => 422
         ], 422);
         throw new ValidationException($validator, $response);
     }

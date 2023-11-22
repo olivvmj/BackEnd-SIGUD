@@ -37,7 +37,8 @@ class AccountController extends Controller
     public function index()
     {
         return response()->json([
-            'status' => 200,
+            'kode' => 200,
+            'status' => true,
             'message' => 'Menampilkan Daftar Pengguna',
             'data' => $this->dataUser
         ]);
@@ -84,6 +85,7 @@ class AccountController extends Controller
             ]);
 
             return response()->json([
+                'kode' => 200,
                 'status' => true,
                 'message' => 'Success Add Data Operator!',
                 'data' => $dataUser
@@ -98,7 +100,6 @@ class AccountController extends Controller
 
     public function createClient(Request $request)
     {
-        // if ($request->user() && $request->user()->hasRole('superAdmin')) {
             // Menyiapkan nilai default untuk pengguna
             $default_user_value = [
                 'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
@@ -134,12 +135,6 @@ class AccountController extends Controller
                 'message' => 'Success Add Data Operator!',
                 'data' => $dataUser
             ]);
-        // } else {
-        //     return response()->json([
-        //         'status' => 403,
-        //         'message' => 'Permission denied.',
-        //     ]);
-        // }
     }
 
     /**

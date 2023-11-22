@@ -52,7 +52,7 @@ class BarangRequest extends FormRequest
     {
         $response = new JsonResponse([
             "messages" => $validator->errors(),
-            "status" => 422
+            'status' => 422
         ], 422);
         throw new ValidationException($validator, $response);
     }
