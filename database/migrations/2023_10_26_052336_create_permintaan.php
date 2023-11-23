@@ -18,9 +18,10 @@ return new class extends Migration
             $table->date('tanggal_permintaan');
             $table->string('alamat_penerima');
             $table->string('nama_penerima');
+            $table->string('status')->default('pending');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('users_id')->references('id')->on('users');
             $table->foreign('barang_id')->references('id')->on('barang');
         });
     }

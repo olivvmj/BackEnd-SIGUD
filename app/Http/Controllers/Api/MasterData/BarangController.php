@@ -113,6 +113,8 @@ class BarangController extends Controller
     /**
      * Display the specified resource.
      */
+
+
     public function show($id)
     {
         return DB::transaction(function () use ($id) {

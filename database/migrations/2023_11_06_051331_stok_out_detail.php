@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('barang_id');
             $table->unsignedBigInteger('stock_out_id');
+            $table->unsignedBigInteger('permintaan_id');
             $table->string('serial_number');
             $table->string('serial_number_manufaktur');
             $table->string('status');
@@ -22,6 +23,7 @@ return new class extends Migration
 
             $table->foreign('barang_id')->references('id')->on('barang');
             $table->foreign('stock_out_id')->references('id')->on('stock_out');
+            $table->foreign('permintaan_id')->references('id')->on('permintaan');
         });
     }
 
