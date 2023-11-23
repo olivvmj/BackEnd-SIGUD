@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('kode_do');
             $table->string('nama_do');
             $table->string('kuantiti');
-            $table->string('tanggal_permintaan');
-            $table->string('tanggal_selesai');
-            $table->string('tanggal_pembatalan');
+            $table->date('tanggal_permintaan')->nullable();
+            $table->date('tanggal_selesai')->nullable();
+            $table->date('tanggal_pembatalan')->nullable();
             $table->timestamps();
 
             $table->foreign('permintaan_id')->references('id')->on('permintaan');

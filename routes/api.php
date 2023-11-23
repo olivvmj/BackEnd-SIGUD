@@ -135,6 +135,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::get('/{id}', [PermintaanController::class, 'show'])->name('show');
         Route::put('/{id}', [PermintaanController::class, 'update'])->name('update');
         Route::delete('/{id}', [PermintaanController::class, 'destroy'])->name('destroy');
+        Route::put('/{id}/{status}', [PermintaanController::class, 'validasiPermintaan']);
     });
 
     Route::prefix('/pengiriman')->group(function () {
