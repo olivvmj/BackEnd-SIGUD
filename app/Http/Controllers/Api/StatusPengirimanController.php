@@ -23,11 +23,12 @@ class StatusPengirimanController extends Controller
     }
     public function index()
     {
-        $statuspengiriman = StatusPengiriman::latest()->get();
+        $statuspengiriman = StatusPengiriman::all();
         return response()->json([
+            'kode' => 200,
+            'status' => true,
+            'message' => 'status pengiriman',
             'data' => StatusPengirimanResource::collection($statuspengiriman),
-            'message' => 'ini tampilan status pengiriman',
-            'success' => true
         ]);
     }
 
@@ -49,8 +50,9 @@ class StatusPengirimanController extends Controller
             $this->statuspengiriman->create($request->all());
 
             return response()->json([
-                "status" => 201,
-                "pesan" => "Data Berhasil di Tambahkan",
+                'kode' => 201,
+                'status' => true,
+                'message' => "Data Berhasil di Tambahkan",
                 "data" => $request->all()
             ]);
         });
@@ -65,8 +67,9 @@ class StatusPengirimanController extends Controller
             $data = StatusPengiriman::findOrFail($id);
 
             return response()->json([
-                'status' => 200,
-                'pesan' => 'Data Status Pengiriman yang dipilih',
+                'kode' => 200,
+                'status' => true,
+                'message' => 'Data Status Pengiriman',
                 'data' => $data,
             ]);
         });
@@ -92,9 +95,10 @@ class StatusPengirimanController extends Controller
             $update->update($request->all());
 
             return response()->json([
-                "status" => 200,
-                "pesan" => "Data Berhasil di Simpan",
-                "data" => $request->all()
+                'kode' => 200,
+                'status' => true,
+                'message' => "Data Berhasil di Simpan",
+                "data" => $update
             ]);
 
         });
@@ -114,12 +118,14 @@ class StatusPengirimanController extends Controller
             DB::commit();
 
             return response()->json([
+                'kode' => 200,
                 'status' => true,
                 'message' => 'Success Menghapus Data!',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
+                'kode' => 500,
                 'status' => false,
                 'message' => 'Terjadi kesalahan saat menghapus data. Error: ' . $e->getMessage(),
             ]);

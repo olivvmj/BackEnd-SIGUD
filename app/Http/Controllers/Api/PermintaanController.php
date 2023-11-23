@@ -10,6 +10,7 @@ use App\Models\Stock_out_Detail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
 use App\Http\Requests\PermintaanRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\PermintaanResource;
@@ -37,11 +38,12 @@ class PermintaanController extends Controller
     }
     public function index()
     {
-        $permintaan = Permintaan::latest()->get();
+        $permintaan = Permintaan::all();
         return response()->json([
+            'kode' => 200,
+            'status' => true,
+            'message' => 'ini Pengiriman',
             'data' => PermintaanResource::collection($permintaan),
-            'message' => 'ini Permintaan',
-            'success' => true,
         ]);
     }
 
@@ -58,27 +60,33 @@ class PermintaanController extends Controller
      */
     public function store(PermintaanRequest $request)
     {
-        return DB::transaction(function() use ($request) {
+        try {
+            return DB::transaction(function () use ($request) {
+                $permintaan = new Permintaan();
+                $permintaan->users_id = $request->users_id;
+                $permintaan->barang_id = $request->barang_id;
+                $permintaan->tanggal_permintaan = $request->tanggal_permintaan;
+                $permintaan->alamat_penerima = $request->alamat_penerima;
+                $permintaan->nama_penerima = $request->nama_penerima;
+                $result = $permintaan->save();
 
-            $filename = "";
-            $permintaan = new Permintaan();
-            $permintaan->users_id = $request->users_id;
-            $permintaan->barang_id = $request->barang_id;
-            $permintaan->tanggal_permintaan = $request->tanggal_permintaan;
-            $permintaan->alamat_penerima= $request->alamat_penerima;
-            $permintaan->nama_penerima = $request->nama_penerima;
-            $result = $permintaan->save();
-
-            if ($result) {
-                return response()->json([
-                    "status" => 200,
-                    "pesan" => "Data Berhasil di Tambahkan",
-                    "data" => $permintaan
-                ]);
-            } else {
-                return response()->json(['success' => false]);
-            }
-        });
+                if ($result) {
+                    return response()->json([
+                        'kode' => 200,
+                        'status' => true,
+                        'message' => "Data Berhasil di Tambahkan",
+                        'data' => $permintaan
+                    ]);
+                } 
+            });
+        } catch (QueryException $e) {
+            return response()->json([
+                'kode' => 500,
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menambahkan data',
+                'error' => $e->getMessage()
+            ]);
+        } 
     }
 
     /**
@@ -90,8 +98,9 @@ class PermintaanController extends Controller
             $data = Permintaan::findOrFail($id);
 
             return response()->json([
-                'status' => 200,
-                'pesan' => 'Data Permintaan yang dipilih',
+                'kode' => 200,
+                'status' => true,
+                'message' => 'Data Permintaan yang dipilih',
                 'data' => $data,
             ]);
         });
@@ -118,9 +127,10 @@ class PermintaanController extends Controller
             $update->update($request->all());
 
             return response()->json([
-                "status" => 200,
-                "pesan" => "Data Berhasil diupdate",
-                "data" => $request->all()
+                'kode' => 200,
+                'status' => true,
+                'message' => "Data Berhasil diupdate",
+                'data' => $update
             ]);
 
         });
@@ -190,14 +200,17 @@ class PermintaanController extends Controller
             DB::commit();
 
             return response()->json([
+                'kode' => 200,
                 'status' => true,
                 'message' => 'Success Menghapus Data!',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
+                'kode' => 500,
                 'status' => false,
-                'message' => 'Terjadi kesalahan saat menghapus data. Error: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan saat menghapus data. Error: ',
+                'error' => $e->getMessage(),
             ]);
         }
     }

@@ -3,21 +3,22 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\StockController;
-use App\Http\Controllers\API\BarangController;
+use App\Http\Controllers\API\BarangMasukController;
 use App\Http\Controllers\API\Stock_inController;
-use App\Http\Controllers\API\Auth\AuthController;
-use App\Http\Controllers\API\Stock_OutController;
-use App\Http\Controllers\API\ManufakturController;
 use App\Http\Controllers\API\PengirimanController;
 use App\Http\Controllers\API\PermintaanController;
-use App\Http\Controllers\API\Akun\AccountController;
 use App\Http\Controllers\API\Stock_in_DetailController;
-use App\Http\Controllers\API\MasterData\BrandController;
 use App\Http\Controllers\API\StatusPengirimanController;
 use App\Http\Controllers\API\StatusPermintaanController;
-// use App\Http\Controllers\API\StatusPermintaanController;
-use App\Http\Controllers\API\Stock_out_DetailController;
+use App\Http\Controllers\API\MasterData\BarangController;
 use App\Http\Controllers\API\MasterData\KategoriController;
+use App\Http\Controllers\API\MasterData\SupplierController;
+use App\Http\Controllers\API\MasterData\BrandController;
+use App\Http\Controllers\API\Akun\AccountController;
+use App\Http\Controllers\API\Auth\AuthController;
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,18 @@ Route::middleware('auth:sanctum')->group(function() {
 });
 
 Route::middleware(['auth:sanctum'])->group(function() {
+    Route::prefix('/barang-masuk')->group(function() {
+        Route::get('/', [BarangMasukController::class, 'index']);
+        Route::post('/', [BarangMasukController::class, 'store']);
+        Route::put('/{id}', [BarangMasukController::class, 'update']);
+        Route::delete('/{id}', [BarangMasukController::class, 'destroy']);
+    });
+
+    Route::prefix('/manage-akun')->group(function() {
+        Route::post('/createClient', [AccountController::class, 'createClient'])->name('createClient');
+        Route::post('/createOperator', [AccountController::class, 'createOperator'])->name('createOperator');
+    });
+
     Route::prefix("kategori")->group(function() {
         Route::get('/', [KategoriController::class, 'index'])->name('index');
         Route::post('/', [KategoriController::class, 'store'])->name('store');
@@ -92,12 +105,12 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::delete('/{id}', [StockController::class, 'destroy'])->name('destroy');
     });
 
-    Route::prefix('/manufaktur')->group(function () {
-        Route::get('/', [ManufakturController::class, 'index'])->name('index');
-        Route::post('/', [ManufakturController::class, 'store'])->name('store');
-        Route::get('/{id}', [ManufakturController::class, 'show'])->name('show');
-        Route::put('/{id}', [ManufakturController::class, 'update'])->name('update');
-        Route::delete('/{id}', [ManufakturController::class, 'destroy'])->name('destroy');
+    Route::prefix('/supplier')->group(function () {
+        Route::get('/', [SupplierController::class, 'index'])->name('index');
+        Route::post('/', [SupplierController::class, 'store'])->name('store');
+        Route::get('/{id}', [SupplierController::class, 'show'])->name('show');
+        Route::put('/{id}', [SupplierController::class, 'update'])->name('update');
+        Route::delete('/{id}', [SupplierController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('/stock_in')->group(function () {
@@ -131,26 +144,5 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::get('/{id}', [PengirimanController::class, 'show'])->name('show');
         Route::put('/{id}', [PengirimanController::class, 'update'])->name('update');
         Route::delete('/{id}', [PengirimanController::class, 'destroy'])->name('destroy');
-    });
-
-    Route::prefix('/stock_out')->group(function () {
-        Route::get('/', [Stock_OutController::class, 'index'])->name('index');
-        Route::post('/', [Stock_OutController::class, 'store'])->name('store');
-        Route::get('/{id}', [Stock_OutController::class, 'show'])->name('show');
-        Route::put('/{id}', [Stock_OutController::class, 'update'])->name('update');
-        Route::delete('/{id}', [Stock_OutController::class, 'destroy'])->name('destroy');
-    });
-
-    Route::prefix('/stock_out_detail')->group(function () {
-        Route::get('/', [Stock_out_DetailController::class, 'index'])->name('index');
-        Route::post('/', [Stock_out_DetailController::class, 'store'])->name('store');
-        Route::get('/{id}', [Stock_out_DetailController::class, 'show'])->name('show');
-        Route::put('/{id}', [Stock_out_DetailController::class, 'update'])->name('update');
-        Route::delete('/{id}', [Stock_out_DetailController::class, 'destroy'])->name('destroy');
-    });
-
-    Route::prefix('/manage-akun')->group(function() {
-        Route::post('/createClient', [AccountController::class, 'createClient'])->name('createClient');
-        Route::post('/createOperator', [AccountController::class, 'createOperator'])->name('createOperator');
     });
 });

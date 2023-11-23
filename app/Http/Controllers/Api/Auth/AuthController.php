@@ -27,20 +27,23 @@ class AuthController extends Controller
 
             if (!$data || !Hash::check($request->password, $data->password)) {
                 return response()->json([
-                    "status" => false,
-                    "message" => "Maaf, Akun Anda Tidak Ditemukan"
-                ], 400);
+                    'kode' => 400,
+                    'status' => false,
+                    'message' => "Maaf, Akun Anda Tidak Ditemukan"
+                ]);
             }
-
+            // $user = Auth::user();
+            // $user->hasRole('superAdmin');
             $token = $data->createToken("auth_token")->plainTextToken;
 
             $response = [
-                "status" => true,
-                "user" => $data,
-                "token" => $token
+                'kode' => 200,
+                'status' => true,
+                'user' => $data,
+                'token' => $token
             ];
 
-            return response($response, 200);
+            return response($response);
 
         });
     }
@@ -50,8 +53,9 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         return response()->json([
-            "success" => true,
-            "message" => "Logout berhasil"
-        ], 200);
+            'kode' => 200,
+            'status' => true,
+            'message' => "Logout berhasil"
+        ]);
     }
 }

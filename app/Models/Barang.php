@@ -28,4 +28,9 @@ class Barang extends Model
         {
             return $this->belongsTo(Brand::class, "brand_id");
         }
+
+        public function detailStock()
+        {
+            return $this->hasMany(Stock_in_Detail::class);
+        }
 }
