@@ -87,10 +87,15 @@ class BrandController extends Controller
 
     public function show($id)
     {
-        return DB::transaction(function () use ($id){
-            $data = $this->brand->findOrFail($id);
+        return DB::transaction(function () use ($id) {
+            $data = Brand::findOrFail($id);
 
-            return new BrandResource($data);
+            return response()->json([
+                'kode' => 200,
+                'status' => true,
+                'message' => 'Data Brand yang dipilih',
+                'data' => $data,
+            ]);
         });
     }
 

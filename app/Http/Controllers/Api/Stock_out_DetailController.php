@@ -133,21 +133,24 @@ class Stock_out_DetailController extends Controller
     {
         DB::beginTransaction();
         try {
-            $stock_in_detail = Stock_out_Detail::findOrFail($id);
+            $stock_out_detail = Stock_out_Detail::findOrFail($id);
 
-            $stock_in_detail->delete();
+            $stock_out_detail->delete();
 
             DB::commit();
 
             return response()->json([
+                'kode' => 200,
                 'status' => true,
                 'message' => 'Success Menghapus Data!',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
+                'kode' => 500,
                 'status' => false,
-                'message' => 'Terjadi kesalahan saat menghapus data. Error: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan saat menghapus data. Error: ',
+                'error' => $e->getMessage(),
             ]);
         }
     }

@@ -29,9 +29,10 @@ class PengirimanController extends Controller
         $this->permintaan = $permintaan;
         $this->status_pengiriman = $status_pengiriman;
 
-        $this->pengiriman = Pengiriman::join('permintaan', 'permintaan_id', '=', 'pengiriman.permintaan_id')
-                        ->join('status_pengiriman', 'status_pengiriman_id', '=', 'pengiriman.status_pengiriman_id')
-                        ->get();
+
+        $this->pengiriman = Pengiriman::join('permintaan', 'pengiriman.permintaan_id', '=', 'permintaan.id')
+        ->join('status_pengiriman', 'pengiriman.status_pengiriman_id', '=', 'status_pengiriman.id')
+        ->get();
     }
     public function index()
     {
@@ -81,7 +82,7 @@ class PengirimanController extends Controller
                 'message' => 'Terjadi kesalahan saat menambahkan data',
                 'error' => $e->getMessage()
             ]);
-        } 
+        }
     }
 
     /**
@@ -112,36 +113,24 @@ class PengirimanController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
     public function update(PengirimanRequest $request, string $id)
     {
-        try {
-            return DB::transaction(function () use ($request, $id) {
-                $update = $this->pengiriman->findOrFail($id);
 
-                $update->update($request->all());
+        return DB::transaction(function() use ($request, $id) {
 
-                return response()->json([
-                    'kode' => 200,
-                    'status' => true,
-                    'message' => "Data Berhasil diupdate",
-                    'data' => $update
-                ]);
-            });
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'kode' => 404,
-                'status' => false,
-                'message' => 'Data tidak ditemukan',
-                'error' => $e->getMessage()
-            ]);
-        } catch (QueryException $e) {
-            return response()->json([
-                'kode' => 500,
-                'status' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan data',
-                'error' => $e->getMessage()
-            ]);
-        } 
+        $update = Pengiriman::findOrFail($id);
+
+        $update->update($request->all());
+
+        return response()->json([
+        'kode' => 201,
+        'status' => true,
+        'message' => "Data Berhasil diupdate",
+        'data' => $request->all()
+        ]);
+
+        });
     }
 
     /**

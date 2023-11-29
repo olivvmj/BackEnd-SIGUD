@@ -77,7 +77,7 @@ class PermintaanController extends Controller
                         'message' => "Data Berhasil di Tambahkan",
                         'data' => $permintaan
                     ]);
-                } 
+                }
             });
         } catch (QueryException $e) {
             return response()->json([
@@ -86,7 +86,7 @@ class PermintaanController extends Controller
                 'message' => 'Terjadi kesalahan saat menambahkan data',
                 'error' => $e->getMessage()
             ]);
-        } 
+        }
     }
 
     /**

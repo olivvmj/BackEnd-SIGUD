@@ -27,7 +27,7 @@ class PengirimanRequest extends FormRequest
     {
         return [
             'permintaan_id' => 'required',
-            'status_pengiriman' => 'required',
+            'status_pengiriman_id' => 'required',
             'tanggal_pengiriman' => 'date_format:Y-m-d'
         ];
     }
@@ -36,9 +36,18 @@ class PengirimanRequest extends FormRequest
     {
         return [
             'permintaan_id.required' => 'Field permintaan_id wajib diisi.',
-            'status_pengiriman.required' => 'Field status_pengiriman wajib diisi.',
+            'status_pengiriman_id.required' => 'Field status_pengiriman wajib diisi.',
             'tanggal_pengiriman.date_format' => 'Format tanggal_pengiriman harus YYYY-MM-DD.'
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $response = new JsonResponse([
+            "messages" => $validator->errors(),
+            'status' => 422
+        ], 422);
+        throw new ValidationException($validator, $response);
     }
 
 }

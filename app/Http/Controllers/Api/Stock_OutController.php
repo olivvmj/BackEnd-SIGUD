@@ -110,7 +110,7 @@ class Stock_OutController extends Controller
     {
         return DB::transaction(function() use ($request, $id) {
 
-            $update = $this->stock_out->findOrFail($id);
+            $update = Stock_Out::findOrFail($id);
 
             $update->update($request->all());
 

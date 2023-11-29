@@ -90,10 +90,15 @@ class KategoriController extends Controller
     public function show($id)
     {
         return DB::transaction(function () use ($id) {
-                $data = $this->kategori->findOrFail($id);
+            $data = Kategori::findOrFail($id);
 
-                return new KategoriResource($data);
-            });
+            return response()->json([
+                'kode' => 200,
+                'status' => true,
+                'message' => 'Data Kategori yang dipilih',
+                'data' => $data,
+            ]);
+        });
     }
 
     /**

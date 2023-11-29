@@ -23,7 +23,7 @@ class AuthController extends Controller
     {
         return DB::transaction(function() use ($request) {
 
-            $data = $this->user->where("username", $request->username)->first();
+            $data = $this->user->where("username", $request->username)->with('roles')->first();
 
             if (!$data || !Hash::check($request->password, $data->password)) {
                 return response()->json([
@@ -32,7 +32,7 @@ class AuthController extends Controller
                     'message' => "Maaf, Akun Anda Tidak Ditemukan"
                 ]);
             }
-            // $user = Auth::user();
+            $role = $data->roles;
             // $user->hasRole('superAdmin');
             $token = $data->createToken("auth_token")->plainTextToken;
 
@@ -40,7 +40,8 @@ class AuthController extends Controller
                 'kode' => 200,
                 'status' => true,
                 'user' => $data,
-                'token' => $token
+                'token' => $token,
+                'role' => $role,
             ];
 
             return response($response);
