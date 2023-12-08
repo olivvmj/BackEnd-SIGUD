@@ -28,7 +28,7 @@ class PermintaanRequest extends FormRequest
         return [
             'users_id' => 'required|exists:users,id',
             'barang_id' => 'required|exists:barang,id',
-            'tanggal_permintaan' => 'required|date',
+            // 'tanggal_permintaan' => 'required|date',
             'alamat_penerima' => 'required|string',
             'nama_penerima' => 'required|string',
         ];

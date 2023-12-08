@@ -21,10 +21,11 @@ class StockInRequest extends FormRequest
             'supplier_id' => 'required|exists:supplier,id',
             'nama_stock_in' => 'required|string|max:255',
             'kuantiti' => 'required|numeric|min:1',
-            'barang_id' => 'required|exists:barang,id',
-            'serial_number' => 'required|string|max:255',
-            'serial_number_manufaktur' => 'required|string|max:255',
-            'status' => 'required|string|max:255',
+            'barang'=>'required|array',
+            'barang.*.barang_id' => 'required|exists:barang,id',
+            'barang.*.serial_number' => 'required|string',
+            'barang.*.serial_number_manufaktur' => 'required|string|max:255',
+            'barang.*.status' => 'required|string|max:255',
         ];
     }
 

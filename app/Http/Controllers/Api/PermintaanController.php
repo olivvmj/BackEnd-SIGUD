@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Barang;
+use App\Models\StockOut;
 use App\Models\Permintaan;
-use App\Models\Stock_out_Detail;
 use Illuminate\Http\Request;
+use App\Models\StockOutDetail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use App\Http\Requests\PermintaanRequest;
@@ -28,7 +29,6 @@ class PermintaanController extends Controller
 
     public function __construct(Permintaan $permintaan, User $users, Barang $barang)
     {
-        $this->permintaan = $permintaan;
         $this->users = $users;
         $this->barang = $barang;
 
@@ -65,7 +65,7 @@ class PermintaanController extends Controller
                 $permintaan = new Permintaan();
                 $permintaan->users_id = $request->users_id;
                 $permintaan->barang_id = $request->barang_id;
-                $permintaan->tanggal_permintaan = $request->tanggal_permintaan;
+                $permintaan->tanggal_permintaan = now()->format('Y-m-d');
                 $permintaan->alamat_penerima = $request->alamat_penerima;
                 $permintaan->nama_penerima = $request->nama_penerima;
                 $result = $permintaan->save();
@@ -77,7 +77,7 @@ class PermintaanController extends Controller
                         'message' => "Data Berhasil di Tambahkan",
                         'data' => $permintaan
                     ]);
-                } 
+                }
             });
         } catch (QueryException $e) {
             return response()->json([
@@ -86,7 +86,7 @@ class PermintaanController extends Controller
                 'message' => 'Terjadi kesalahan saat menambahkan data',
                 'error' => $e->getMessage()
             ]);
-        } 
+        }
     }
 
     /**
@@ -122,7 +122,7 @@ class PermintaanController extends Controller
     {
         return DB::transaction(function() use ($request, $id) {
 
-            $update = $this->permintaan->findOrFail($id);
+            $update = Permintaan::findOrFail($id);
 
             $update->update($request->all());
 
@@ -136,6 +136,56 @@ class PermintaanController extends Controller
         });
     }
 
+    // public function validasiPermintaan($id, $status)
+    // {
+    //     $permintaan = Permintaan::find($id);
+
+    //     if (!$permintaan) {
+    //         return response()->json(['message' => 'Permintaan tidak ditemukan'], 404);
+    //     }
+
+    //     if ($status == 'diterima') {
+    //         $permintaan->status = 'diterima';
+    //         $permintaan->save();
+
+    //         // Mendapatkan informasi dari tabel Permintaan
+    //         $tanggalPermintaan = $permintaan->tanggal_permintaan;
+    //         $alamatPenerima = $permintaan->alamat_penerima;
+    //         $namaPenerima = $permintaan->nama_penerima;
+
+    //         // Nomor Dokumen yang unik (contoh: menggunakan ID permintaan)
+    //         $nomorDoc = $permintaan->id . '/BAST/JMI-JSA/' . date('m/Y');
+
+    //         // Informasi dari tabel Stock_out_detail
+    //         $stock_out_detail = StockOutDetail::where('permintaan_id', $id)->get();
+
+    //         // Gunakan data ini untuk mengisi template berita acara
+    //         $data = [
+    //             'nomor_doc' => $nomorDoc,
+    //             'tanggal' => $tanggalPermintaan,
+    //             'alamat' => $alamatPenerima,
+    //             'nama' => $namaPenerima,
+    //             'stock_detail' => $stock_out_detail
+    //         ];
+
+    //         return response()->json([
+    //             'status' => 200,
+    //             'message' => 'Berita acara berhasil dibuat',
+    //             'data' => $data,
+    //         ]);
+    //     } elseif ($status == 'ditolak') {
+
+    //         return response()->json([
+    //             'status' => 400,
+    //             'message' => 'Permintaan ditolak',
+    //         ]);
+    //     } else {
+    //         // Jika status tidak valid (bukan 'diterima' atau 'ditolak')
+    //         return response()->json(['message' => 'Status tidak valid'], 400);
+    //     }
+
+    // }
+
     public function validasiPermintaan($id, $status)
     {
         $permintaan = Permintaan::find($id);
@@ -148,6 +198,13 @@ class PermintaanController extends Controller
             $permintaan->status = 'diterima';
             $permintaan->save();
 
+            // Update tabel StockOut
+            $stockOut = StockOut::where('permintaan_id', $id)->first();
+            if ($stockOut) {
+                $stockOut->tanggal_selesai = now()->format('Y-m-d H:i:s');
+                $stockOut->save();
+            }
+
             // Mendapatkan informasi dari tabel Permintaan
             $tanggalPermintaan = $permintaan->tanggal_permintaan;
             $alamatPenerima = $permintaan->alamat_penerima;
@@ -157,7 +214,7 @@ class PermintaanController extends Controller
             $nomorDoc = $permintaan->id . '/BAST/JMI-JSA/' . date('m/Y');
 
             // Informasi dari tabel Stock_out_detail
-            $stock_out_detail = Stock_out_Detail::where('permintaan_id', $id)->get();
+            $stock_out_detail = StockOutDetail::where('permintaan_id', $id)->get();
 
             // Gunakan data ini untuk mengisi template berita acara
             $data = [
@@ -174,16 +231,23 @@ class PermintaanController extends Controller
                 'data' => $data,
             ]);
         } elseif ($status == 'ditolak') {
+            $permintaan->status = 'ditolak';
+            $permintaan->save();
+
+            // Update tabel StockOut
+            $stockOut = StockOut::where('permintaan_id', $id)->first();
+            if ($stockOut) {
+                $stockOut->tanggal_pembatalan = now()->format('Y-m-d-H-i-s');
+                $stockOut->save();
+            }
 
             return response()->json([
                 'status' => 400,
                 'message' => 'Permintaan ditolak',
             ]);
         } else {
-            // Jika status tidak valid (bukan 'diterima' atau 'ditolak')
             return response()->json(['message' => 'Status tidak valid'], 400);
         }
-
     }
 
     /**

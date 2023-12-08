@@ -143,7 +143,7 @@ class BrandController extends Controller
     {
         try {
             return DB::transaction(function () use ($id) {
-                $brand = $this->brand->findOrFail($id);
+                $brand = Brand::findOrFail($id);
                 $brand->delete();
 
                 return response()->json([

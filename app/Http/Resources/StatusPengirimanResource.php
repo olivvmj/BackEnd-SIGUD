@@ -16,7 +16,7 @@ class StatusPengirimanResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'jenis_status' => $this->status,
+            'jenis_status' => $this->jenis_status,
             'notes' => $this->notes,
             'tanggal' => $this->tanggal,
         ];

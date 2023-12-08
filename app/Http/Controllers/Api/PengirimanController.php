@@ -81,7 +81,7 @@ class PengirimanController extends Controller
                 'message' => 'Terjadi kesalahan saat menambahkan data',
                 'error' => $e->getMessage()
             ]);
-        } 
+        }
     }
 
     /**
@@ -116,9 +116,9 @@ class PengirimanController extends Controller
     {
         try {
             return DB::transaction(function () use ($request, $id) {
-                $update = $this->pengiriman->findOrFail($id);
+                $update = Pengiriman::findOrFail($id);
 
-                $update->update($request->all());
+                $update->fill($request->all());
 
                 return response()->json([
                     'kode' => 200,
@@ -141,7 +141,7 @@ class PengirimanController extends Controller
                 'message' => 'Terjadi kesalahan saat menyimpan data',
                 'error' => $e->getMessage()
             ]);
-        } 
+        }
     }
 
     /**

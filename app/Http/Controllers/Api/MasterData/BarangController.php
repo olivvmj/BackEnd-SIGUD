@@ -79,7 +79,7 @@ class BarangController extends Controller
                     $image = $request->file('gambar_barang');
                     $filename = Carbon::now()->format('YmdHis').'.'.$image->getClientOriginalExtension();
                     $path = 'barang/'.$filename;
-                    Storage::disk('local')->put($path , file_get_contents($image));
+                    Storage::disk('public')->put($path , file_get_contents($image));
                 }
 
                 $barang = new Barang();
@@ -94,7 +94,8 @@ class BarangController extends Controller
                         'kode' => 200,
                         'status' => true,
                         'message' => "Data Berhasil di Tambahkan",
-                        'data' => $barang
+                        'data' => $barang,
+
                     ]);
                 }
             });
@@ -119,7 +120,7 @@ class BarangController extends Controller
     {
         return DB::transaction(function () use ($id) {
             try {
-                $data = $this->barang->findOrFail($id);
+                $data = Barang::findOrFail($id);
 
                 return response()->json([
                     'kode' => 200,

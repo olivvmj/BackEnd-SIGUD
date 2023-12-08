@@ -32,16 +32,28 @@ class AuthController extends Controller
                     'message' => "Maaf, Akun Anda Tidak Ditemukan"
                 ]);
             }
-            // $user = Auth::user();
-            // $user->hasRole('superAdmin');
+
+            $role = $data->roles;
             $token = $data->createToken("auth_token")->plainTextToken;
 
             $response = [
                 'kode' => 200,
                 'status' => true,
-                'user' => $data,
-                'token' => $token
+                'user' => [
+                    'id' => $data->id,
+                    'name' => $data->name,
+                    'username' => $data->username,
+                ],
+                'token' => $token,
+                'roles' => []
             ];
+
+            foreach ($role as $roles) {
+                $response['roles'][] = [
+                    'id' => $roles->id,
+                    'name' => $roles->name,
+                ];
+            }
 
             return response($response);
 

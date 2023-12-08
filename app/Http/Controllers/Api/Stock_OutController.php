@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Stock_Out;
+use App\Models\StockOut;
 use App\Models\Permintaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Stock_OutRequest;
-use App\Http\Resources\Stock_OutResource;
+use App\Http\Resources\StockOutResource;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Stock_OutController extends Controller
 {
@@ -20,20 +21,20 @@ class Stock_OutController extends Controller
 
     protected $permintaan;
 
-    public function __construct(Stock_Out $stock_out, Permintaan $permintaan)
+    public function __construct(StockOut $stock_out, Permintaan $permintaan)
     {
         $this->stock_out = $stock_out;
         $this->permintaan = $permintaan;
 
-        $this->stock_out = Stock_Out::join('permintaan', 'permintaan_id', '=', 'stock_out.permintaan_id')
+        $this->stock_out = StockOut::join('permintaan', 'permintaan_id', '=', 'stock_out.permintaan_id')
                         ->get();
     }
 
     public function index()
     {
-        $stock_out = Stock_Out::latest()->get();
+        $stock_out = StockOut::latest()->get();
         return response()->json([
-            'data' => Stock_OutResource::collection($stock_out),
+            'data' => StockOutResource::collection($stock_out),
             'message' => 'ini stock in',
             'success' => 200
         ]);
@@ -53,8 +54,7 @@ class Stock_OutController extends Controller
     public function store(Stock_OutRequest $request)
     {
         return DB::transaction(function() use ($request) {
-            $filename = "";
-            $stock_out = new Stock_Out();
+            $stock_out = new StockOut();
             $stock_out->permintaan_id = $request->permintaan_id;
             $stock_out->kode_do = $request->kode_do;
             $stock_out->nama_do = $request->nama_do;
@@ -81,24 +81,43 @@ class Stock_OutController extends Controller
      */
     public function show($id)
     {
-        return DB::transaction(function () use ($id) {
-            $data = $this->stock_out->findOrFail($id);
-            if(is_null($data)){
-                return $this->sendError('Data Stock In Detail tidak ditemukan');
-            }
-
+        try {
+            return DB::transaction(function () use ($id) {
+                $data = StockOut::findOrFail($id);
+                if (empty($data)) {
+                    $response = [
+                        'kode' => 204,
+                        'status' => false,
+                        'message' => "Data Tidak Ada",
+                        'error' => "Data tidak ditemukan",
+                    ];
+                    return response()->json($response);
+                } else {
+                    $response = [
+                        'kode' => 200,
+                        'status' => true,
+                        'message' => "Data StockOut",
+                        'data' => $data,
+                    ];
+                    return response()->json($response);
+                }
+            });
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
             return response()->json([
-                "status" => 200,
-                "pesan" => "Data Stock In Detail yang dipilih",
-                "data" => $data,
+                'kode' => 404,
+                'status' => false,
+                'message' => 'Data tidak ditemukan',
+                'error' => $e->getMessage()
             ]);
-        });
+        }
+
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Stock_Out $stock_Out)
+    public function edit(StockOut $stock_Out)
     {
         //
     }
@@ -108,19 +127,29 @@ class Stock_OutController extends Controller
      */
     public function update(Stock_OutRequest $request, string $id)
     {
-        return DB::transaction(function() use ($request, $id) {
+        try{
+            return DB::transaction(function() use ($request, $id) {
 
-            $update = $this->stock_out->findOrFail($id);
+                $update = StockOut::findOrFail($id);
 
-            $update->update($request->all());
+                $update->fill($request->all());
 
+                return response()->json([
+                    "status" => 200,
+                    "pesan" => "Data Berhasil di Simpan",
+                    "data" => $update
+                ]);
+
+            });
+        }catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
-                "status" => 200,
-                "pesan" => "Data Berhasil di Simpan",
-                "data" => $request->all()
+                'kode' => 500,
+                'status' => false,
+                'message' => "Terjadi kesalahan saat mengambil data. Error: ",
+                'error' => $e->getMessage(),
             ]);
-
-        });
+        }
     }
 
     /**
@@ -130,7 +159,7 @@ class Stock_OutController extends Controller
     {
         DB::beginTransaction();
         try {
-            $stock_out = Stock_Out::findOrFail($id);
+            $stock_out = StockOut::findOrFail($id);
 
             $stock_out->delete();
 
