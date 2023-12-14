@@ -63,13 +63,6 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::post('/', [BarangKeluarController::class, 'store']);
     });
 
-    Route::prefix('/manage-akun')->group(function() {
-        Route::post('/createClient', [AccountController::class, 'createClient'])->name('createClient');
-        Route::post('/createOperator', [AccountController::class, 'createOperator'])->name('createOperator');
-        Route::get('/', [AccountController::class, 'index']);
-        Route::delete('/{id}', [AccountController::class, 'destroy']);
-    });
-
     Route::prefix("kategori")->group(function() {
         Route::get('/', [KategoriController::class, 'index'])->name('index');
         Route::post('/', [KategoriController::class, 'store'])->name('store');
@@ -153,7 +146,13 @@ Route::middleware(['auth:sanctum'])->group(function() {
 
     Route::prefix('/manage-akun')->group(function() {
         Route::get('/', [AccountController::class, 'index']);
-        Route::post('/createClient', [AccountController::class, 'createClient']);
-        Route::post('/createOperator', [AccountController::class, 'createOperator']);
+        Route::prefix('/client')->group(function(){
+            Route::get('/getClient', [AccountController::class, 'getClient']);
+            Route::post('/createClient', [AccountController::class, 'createClient']);
+        });
+        Route::prefix('/operator')->group(function(){
+            Route::get('/getOperator', [AccountController::class, 'getOperator']);
+            Route::post('/createOperator', [AccountController::class, 'createOperator']);
+        });
     });
 });

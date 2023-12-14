@@ -28,7 +28,7 @@ class StockOutDetail extends Model
 
         public function stock_out()
         {
-            return $this->belongsTo(Stock_in::class, "stock_out_id");
+            return $this->belongsTo(StockOut::class, "stock_out_id");
         }
 
         public function permintaan()

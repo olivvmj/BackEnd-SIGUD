@@ -40,6 +40,7 @@ class BarangKeluarController extends Controller
                     'barang.gambar_barang',
                     'stock_out.tanggal_selesai',
                     'stock_out_detail.serial_number',
+                    'stock_out_detail.barang_id'
                 )
                 ->get();
 
@@ -59,7 +60,7 @@ class BarangKeluarController extends Controller
                     'stock_out_detail_id' => $data->stock_out_detail_id,
                     'nama_barang' => $data->nama_barang,
                     'gambar_barang' => $data->gambar_barang,
-                    'kuantiti' => $data->kuantiti,
+                    'kuantiti' => StockOutDetail::where('barang_id', $data->barang_id)->count(),
                     'serial_number' => $data->serial_number,
                     'serial_number_manufaktur' => $data->serial_number_manufaktur,
                     'status' => $data->status,
@@ -139,12 +140,13 @@ class BarangKeluarController extends Controller
     //     }
     // }
 
-    public function store(Stock_OutRequest $request, $id)
+    public function store(Stock_OutRequest $request)
     {
         $stockOut = StockOut::create([
             'permintaan_id' => $request->permintaan_id,
             'kode_do' => $request->kode_do,
             'nama_do' => $request->nama_do,
+            'kuantiti' => count($request->barang),
             'tanggal_selesai' => null,
             'tanggal_pembatalan' => null,
         ]);
@@ -153,14 +155,18 @@ class BarangKeluarController extends Controller
         $array = [];
         foreach ($barang as $item) {
             array_push($array, [
-                'stock_in_id' => $stockOut->id,
+                'stock_out_id' => $stockOut->id,
                 'barang_id' => $item['barang_id'],
                 'serial_number' => $item['serial_number'],
                 'serial_number_manufaktur' => $item['serial_number_manufaktur'],
                 'status' => $item['status'],
 
             ]);
+
         }
+
+        $detailOut = StockOutDetail::insert($array);
+
 
         return response()->json([
             'kode' => 200,

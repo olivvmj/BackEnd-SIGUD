@@ -29,7 +29,6 @@ class Stock_OutRequest extends FormRequest
         'permintaan_id' => 'required|exists:permintaan,id',
         'kode_do' => 'required|string|max:255',
         'nama_do' => 'required|string|max:255',
-        'kuantiti' => 'required|string|max:255',
         'barang'=>'required|array',
         'barang.*.barang_id' => 'required|exists:barang,id',
         'barang.*.serial_number' => 'required|string',
@@ -47,13 +46,20 @@ public function messages(): array
         'kode_do.string' => 'Field kode_do harus berupa string.',
         'kode_do.max' => 'Field kode_do maksimal 255 karakter.',
         'nama_do.max' => 'Field nama_do maksimal 255 karakter.',
-        'kuantiti.required' => 'Field kuantiti wajib diisi.',
-        'kuantiti.string' => 'Field kuantiti harus berupa string.',
-        'kuantiti.max' => 'Field kuantiti maksimal 255 karakter.',
         'tanggal_permintaan.date' => 'Field tanggal_permintaan harus berupa tanggal yang valid.',
         'tanggal_selesai.date' => 'Field tanggal_selesai harus berupa tanggal yang valid.',
         'tanggal_pembatalan.date' => 'Field tanggal_pembatalan harus berupa tanggal yang valid.',
     ];
+}
+
+
+protected function failedValidation(Validator $validator)
+{
+    $response = new JsonResponse([
+        "messages" => $validator->errors(),
+        'status' => 422
+    ], 422);
+    throw new ValidationException($validator, $response);
 }
 
 }

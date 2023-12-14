@@ -42,7 +42,7 @@ class BarangController extends Controller
 
         if ($barang->isEmpty()) {
             return response()->json([
-                'kode' => 404,
+                'kode' => 204,
                 'status' => false,
                 'message' => 'Daftar barang kosong',
                 'error' => 'Tidak ada barang yang tersedia',

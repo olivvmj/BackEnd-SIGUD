@@ -26,4 +26,9 @@ class StockOut extends Model
         {
             return $this->belongsTo(Permintaan::class, "permintaan_id");
         }
+
+        public function details()
+        {
+            return $this->hasMany(StockOutDetail::class);
+        }
 }
