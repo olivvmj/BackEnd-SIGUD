@@ -85,7 +85,7 @@ class Stock_out_DetailController extends Controller
     public function show($id)
     {
         return DB::transaction(function () use ($id) {
-            $data = $this->stock_out_detail->findOrFail($id);
+            $data = Stock_out_Detail::findOrFail($id);
             if(is_null($data)){
                 return $this->sendError('Data Stock out Detail tidak ditemukan');
             }
@@ -113,7 +113,7 @@ class Stock_out_DetailController extends Controller
     {
         return DB::transaction(function() use ($request, $id) {
 
-            $update = $this->stock_out_detail->findOrFail($id);
+            $update = Stock_out_Detail::findOrFail($id);
 
             $update->update($request->all());
 

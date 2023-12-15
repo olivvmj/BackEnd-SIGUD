@@ -69,6 +69,7 @@ class AccountController extends Controller
             // Memberi role pada user baru
             $user->assignRole('operator');
 
+            $filename = "";
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $filename = Carbon::now()->format('YmdHis') . '.' . $image->getClientOriginalExtension();
@@ -115,6 +116,7 @@ class AccountController extends Controller
             // Memberi role pada user baru
             $user->assignRole('operator');
 
+            $filename = "";
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $filename = Carbon::now()->format('YmdHis') . '.' . $image->getClientOriginalExtension();
@@ -158,16 +160,14 @@ class AccountController extends Controller
      */
     public function destroy(Request $request, string $id)
     {
-        $userRoles = $request->user()->getRoleNames();
-
-        if ($request->user() && $request->user()->hasRole('superAdmin')) {
             DB::beginTransaction();
             try {
                 $user = User::find($id);
                 if (!$user) {
                     DB::rollBack();
                     return response()->json([
-                        'status' => 404,
+                        'kode' => 404,
+                        'status' => false,
                         'message' => 'user tidak terdaftar'
                     ]);
                 }
@@ -177,6 +177,7 @@ class AccountController extends Controller
                 DB::commit();
 
                 return response()->json([
+                    'kode' => 200,
                     'status' => true,
                     'message' => 'Berhasil menghapus data user'
                 ]);
@@ -189,14 +190,6 @@ class AccountController extends Controller
                     'error' => $e->getMessage()
                 ]);
             }
-        } else {
-            $response = [
-                'status' => 403,
-                'message' => 'Permission denied',
-                'userRoles' => $userRoles,
-            ];
 
-            return response()->json($response);
-        }
     }
 }

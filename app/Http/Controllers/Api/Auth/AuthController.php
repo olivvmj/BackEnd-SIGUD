@@ -34,6 +34,8 @@ class AuthController extends Controller
             }
             $role = $data->roles;
             // $user->hasRole('superAdmin');
+
+            $role = $data->roles;
             $token = $data->createToken("auth_token")->plainTextToken;
 
             $response = [
@@ -42,7 +44,21 @@ class AuthController extends Controller
                 'user' => $data,
                 'token' => $token,
                 'role' => $role,
+                'user' => [
+                    'id' => $data->id,
+                    'name' => $data->name,
+                    'username' => $data->username,
+                ],
+                'token' => $token,
+                'roles' => []
             ];
+
+            foreach ($role as $roles) {
+                $response['roles'][] = [
+                    'id' => $roles->id,
+                    'name' => $roles->name,
+                ];
+            }
 
             return response($response);
 

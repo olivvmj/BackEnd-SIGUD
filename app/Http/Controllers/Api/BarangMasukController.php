@@ -9,6 +9,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use App\Models\StockInDetail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StockInRequest;
 use App\Http\Resources\StockInResource;
@@ -39,8 +40,6 @@ class BarangMasukController extends Controller
                 ->join('supplier', 'stock_in.supplier_id', '=', 'supplier.id')
                 ->select(
                     'stock_in_detail.id as stock_in_detail_id',
-                    'supplier.nama_supplier',
-                    'stock_in.nama_stock_in',
                     'barang.nama_barang',
                     'barang.gambar_barang',
                     'stock_in.kuantiti',
@@ -58,13 +57,13 @@ class BarangMasukController extends Controller
                 ]);
             }
 
+
+
             $formattedData = [];
 
             foreach ($barangMasuk as $data) {
-                $supplierName = $data->nama_supplier;
-                $stockInName = $data->nama_stock_in;
 
-                $formattedData[$supplierName][$stockInName][] = [
+                $formattedData[] = [
                     'stock_in_detail_id' => $data->stock_in_detail_id,
                     'nama_barang' => $data->nama_barang,
                     'gambar_barang' => $data->gambar_barang,
@@ -72,6 +71,7 @@ class BarangMasukController extends Controller
                     'serial_number' => $data->serial_number,
                     'serial_number_manufaktur' => $data->serial_number_manufaktur,
                     'status' => $data->status,
+                    'url' => "/barang/". $data->gambar_barang,
                 ];
             }
 
@@ -79,18 +79,8 @@ class BarangMasukController extends Controller
                 'kode' => 200,
                 'status' => true,
                 'message' => 'Menampilkan Data Barang Masuk',
-                'data' => []
+                'data' => $formattedData
             ];
-
-            foreach ($formattedData as $supplierName => $stockIns) {
-                foreach ($stockIns as $stockInName => $details) {
-                    $responseData['data'][] = [
-                        'nama_supplier' => $supplierName,
-                        'nama_stock_in' => $stockInName,
-                        'detail_barang_masuk' => $details,
-                    ];
-                }
-            }
 
             return response()->json($responseData);
 
@@ -115,36 +105,35 @@ class BarangMasukController extends Controller
                 $stockIn = StockIn::create([
                     'supplier_id' => $request->supplier_id,
                     'nama_stock_in' => $request->nama_stock_in,
-                    'kuantiti' => $request->kuantiti,
+                    'kuantiti' => count($request->barang),
                 ]);
 
-                $detailStock = StockInDetail::create([
-                    'barang_id' => $request->barang_id,
-                    'stock_in_id' => $stockIn->id,
-                    'serial_number' => $request->serial_number,
-                    'serial_number_manufaktur' => $request->serial_number_manufaktur,
-                    'status' => $request->status,
-                ]);
+                $barang = $request->barang;
+                $array = [];
+                foreach($barang as $item){
+                    array_push($array, [
+                        'stock_in_id' => $stockIn->id,
+                        'barang_id' => $item['barang_id'],
+                        'serial_number' => $item['serial_number'],
+                        'serial_number_manufaktur' => $item['serial_number_manufaktur'],
+                        'status' => $item['status'],
 
-                $result = $stockIn && $detailStock;
-
-                if ($result) {
-                    $stockInWithDetails = StockIn::with('details.barang')->find($stockIn->id);
-
-                    return response()->json([
-                        'kode' => 200,
-                        'status' => true,
-                        'message' => 'Data Berhasil di Tambahkan',
-                        'data' => $stockInWithDetails
-                    ]);
-                } else {
-                    DB::rollBack();
-                    return response()->json([
-                        'kode' => 500,
-                        'status' => false,
-                        'message' => 'Gagal menambahkan data'
                     ]);
                 }
+
+                $detailStock = StockInDetail::insert($array);
+
+                return response()->json([
+                    'kode' => 200,
+                    'status' => true,
+                    'message' => 'Data Berhasil di Tambahkan',
+                    'data' => [
+                        'stockIn' => $stockIn,
+                        'detailStock' => StockInDetail::where('stock_in_id', $stockIn->id)->get(),
+                        // 'detailStock' => $request->barang,
+                    ]
+                ]);
+
             });
         } catch (QueryException $e) {
             DB::rollBack();

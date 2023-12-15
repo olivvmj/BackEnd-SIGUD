@@ -30,9 +30,11 @@ class Stock_OutRequest extends FormRequest
         'kode_do' => 'required|string|max:255',
         'nama_do' => 'required|string|max:255',
         'kuantiti' => 'required|string|max:255',
-        'tanggal_permintaan' => 'nullable|date',
-        'tanggal_selesai' => 'nullable|date',
-        'tanggal_pembatalan' => 'nullable|date',
+        'barang'=>'required|array',
+        'barang.*.barang_id' => 'required|exists:barang,id',
+        'barang.*.serial_number' => 'required|string',
+        'barang.*.serial_number_manufaktur' => 'required|string|max:255',
+        'barang.*.status' => 'required|string|max:255',
     ];
 }
 

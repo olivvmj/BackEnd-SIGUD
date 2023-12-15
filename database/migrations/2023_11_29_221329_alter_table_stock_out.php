@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('status_pengiriman', function (Blueprint $table) {
-            $table->id();
-            $table->string('jenis_status');
-            $table->string('notes')->nullable();
-            $table->timestamps('tanggal');
-            $table->timestamps();
+        Schema::table('stock_out', function (Blueprint $table) {
+            $table->timestamp('tanggal_selesai')->nullable();
+            $table->timestamp('tanggal_pembatalan')->nullable();
         });
     }
 
@@ -25,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('status_pengiriman');
+        Schema::table('stock_out', function (Blueprint $table) {
+            //
+        });
     }
 };

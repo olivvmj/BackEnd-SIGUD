@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('barang_id');
-            $table->date('tanggal_permintaan');
+            $table->timestamps('tanggal_permintaan');
             $table->string('alamat_penerima');
             $table->string('nama_penerima');
             $table->string('status')->default('pending');

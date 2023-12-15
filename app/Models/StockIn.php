@@ -22,7 +22,7 @@ class StockIn extends Model
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'supplier_id');
+        return $this->belongsTo(Supplier::class, 'supplier_id')->onDelete('cascade');
     }
 
     public function details()

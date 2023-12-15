@@ -131,6 +131,34 @@ class PengirimanController extends Controller
         ]);
 
         });
+        try {
+            return DB::transaction(function () use ($request, $id) {
+                $update = Pengiriman::findOrFail($id);
+
+                $update->fill($request->all());
+
+                return response()->json([
+                    'kode' => 200,
+                    'status' => true,
+                    'message' => "Data Berhasil diupdate",
+                    'data' => $update
+                ]);
+            });
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'kode' => 404,
+                'status' => false,
+                'message' => 'Data tidak ditemukan',
+                'error' => $e->getMessage()
+            ]);
+        } catch (QueryException $e) {
+            return response()->json([
+                'kode' => 500,
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan data',
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
